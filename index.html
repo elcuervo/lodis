@@ -1,36 +1,107 @@
 <html>
   <body>
     <h1>Gerbis</h1>
+    <h2>Tests</h2>
+    <h3>Scenarios</h3>
+    <ul id='scenarios'></ul>
   </body>
+  <script type="text/javascript" src="picotest.js"></script>
   <script type="text/javascript" src="gerbis.js"></script>
   <script>
-    var assert = function(msg, expected){ if(!expected){ throw new Error(msg) }else{ console.log(".") } ;}
-    var g = new Gerbis;
-    assert( 'SET: ', g.set('foo', 1) == true );
-    assert( 'GET: ', g.get('foo') == 1 );
+    var events_listener = document.getElementById("scenarios");
+    var append_to = function(element, content){
+      li = document.createElement("li");
+      li.innerHTML = content;
+      element.appendChild(li);
+    };
 
-    g.set('bar', 2);
-    g.set('baz', 3);
+    events_listener.addEventListener("scenario_start", function(event){
+      append_to(document.getElementById("scenarios"), event.result.scenario);
+      console.log(event.result.scenario);
+    });
 
-    assert( 'DEL: ', g.del('foo') == true );
-    assert( 'EXISTS: ', g.exists('bar') == true );
-    assert( 'EXPIRE: ', g.expire('bar', 3) == true);
-    assert( 'EXISTS (after expire): ', g.exists('bar') == true );
-    assert( 'TTL: ', g.ttl('bar') > 1 );
-    assert( 'TTL (wo expire): ', g.ttl('baz') == -1 );
-    setTimeout( function(){
-      assert( 'EXPIREd:', g.exists('bar') == false );
-    }, 3000)
-    assert( 'EXPIREAT: ', g.expireat('baz', new Date().getTime() + 3000) == true );
-    setTimeout(function(){
-      assert( 'EXPIREdAT: ', g.exists('baz') == false)
-    }, 3000);
-    g.set('one', 1);
-    g.set('two', 2);
-    g.set('three', 3);
-    assert('KEYS search 1: ', g.keys("t").indexOf("three") >= 0);
-    assert('KEYS search 1: ', g.keys("t").indexOf("two") >= 0);
-    assert('KEYS search 2: ', g.keys("ee$").indexOf('three') >= 0);
+    events_listener.addEventListener("test_start", function(event){
+      console.log(event.result.test_name);
+    });
+
+    events_listener.addEventListener("successful_assertion", function(event){
+      console.log(".");
+    });
+
+    events_listener.addEventListener("successful_test", function(event){
+      append_to(this, event.result.test_name);
+    });
+
+    events_listener.addEventListener("failed_test", function(event){
+      console.error(event.result.test_name + " " + event.result.test_message)
+    });
+
+    scenario("Redis commands", {
+      "before": function(){
+        window.g = new Gerbis;
+      },
+
+      "after": function(){
+        g.storage.clear(); // Should use a Redis command
+      },
+
+      "SET should set a key": function(){
+        assert(g.set('foo', 1));
+      },
+
+      "GET should get a key": function(){
+        g.set('foo', 1);
+        assert(g.get('foo'))
+      },
+
+      "DEL should delete a key": function(){
+        assert(g.del('foo'));
+        assert(!g.exists('foo'));
+      },
+
+      "EXISTS should validate the existance of a key": function(){
+        g.set('foo', 1);
+        assert(g.exists('foo'));
+        assert(!g.exists('bar'));
+      },
+
+      "EXPIRE should expire a key in n seconds": function(){
+        g.set("foo", 1);
+        assert(g.expire("foo", 2));
+        setTimeout(function(g) {
+          assert(!g.exists("foo"));
+        }, 3000, g);
+      },
+
+      "TTL should show the remaining time of a given key after EXPIRE": function(){
+        g.set("foo", 1);
+        g.set("bar", 2);
+        g.expire("foo", 3);
+        assert(g.ttl("foo") > 1);
+        assert(g.ttl("bar") == -1);
+      },
+
+      "EXPIREAT should expire a key in a given epoch time": function(){
+        g.set("foo", 1);
+        g.expireat('baz', new Date().getTime() + 2000)
+        setTimeout(function(g){
+          assert(!g.exists("foo"));
+        }, 3000, g);
+      },
+
+      "KEYS should search for given keys": function(){
+        g.set('one',    1);
+        g.set('two',    2);
+        g.set('three',  3);
+
+        assert(g.keys("t").indexOf("three") >= 0);
+        assert(g.keys("t").indexOf("two") >= 0);
+        assert(g.keys("ee$").indexOf('three') >= 0);
+        assert(g.keys("xxx").length == 0);
+      },
+
+
+    }, events_listener);
 
   </script>
 
