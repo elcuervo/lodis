@@ -8,10 +8,10 @@
   * EXPIREAT
   * KEYS
 
-  APPEND key, value
-  AUTH password //not implemented
-  BGREWRITEAOF //
-  BGSAVE
+  * APPEND key, value
+  * AUTH password //not implemented
+  * BGREWRITEAOF //
+  * BGSAVE
   BLPOP key [key ...] timeout
   BRPOP key [key ...] timeout
   BRPOPLPUSH source destination timeout
@@ -20,8 +20,8 @@
   CONFIG RESETSTAT
   DEBUG OBJECT key
   DEBUG SEGFAULT
-  DECR key
-  DECRBY key decrement
+  * DECR key
+  * DECRBY key decrement
   DISCARD
   ECHO message
   EXEC
@@ -42,7 +42,7 @@
   HSET key field value
   HSETNX key field value
   HVALS key
-  INCR key
+  * INCR key
   INCRBY key increment
   INFO
   LASTSAVE
@@ -50,7 +50,7 @@
   LINSERT key BEFORE|AFTER pivot value
   LLEN key
   LPOP key
-  LPUSH key value [value ...]
+  * LPUSH key value [value ...]
   LPUSHX key value
   LRANGE key start stop
   LREM key count value
@@ -74,7 +74,7 @@
   RENAMENX key newkey
   RPOP key
   RPOPLPUSH source destination
-  RPUSH key value [value ...]
+  * RPUSH key value [value ...]
   RPUSHX key value
   SADD key member [member ...]
   SAVE

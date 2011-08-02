@@ -1,67 +1,60 @@
-@scenario = (msg, tests, listener = document) ->
-  extract = (key, from) ->
+class Pico
+  success:  0
+  fail:     0
+  count:    0
+  assertions: 0
+
+  constructor: (@description, @tests) ->
+
+  extract: (key, from) ->
     value = from[key] || () ->
     delete from[key]
     value
 
-  create_event = (name, options = {}) ->
-    event = document.createEvent('Event')
-    event.initEvent(name, true, true)
-    event.result = options
-    event.add = (options) ->
-      for key, value of options
-        event.result[key] = value
-    event
+  run: ->
+    console.log @description
+    @before = this.extract "before",  @tests
+    @after  = this.extract "after",   @tests
+    for key, value of @tests
+      this.exec key, value
+    console.warn "Results for #{@description} #{@success}/#{@count} tests. #{@assertions} assertions"
 
-  test_start            = create_event 'test_start'
-  test_end              = create_event 'test_end'
-  successful_test       = create_event 'successful_test'
-  failed_test           = create_event 'failed_test'
-  successful_assertion  = create_event 'successful_assertion'
-  failed_assertion      = create_event 'failed_assertion'
+  assert_equal: (obj1, obj2) ->
+    return throw new Error if !obj1? or !obj2?
+    return throw new Error("diff") if obj1.constructor != obj2.constructor
 
-  scenario_start        = create_event 'scenario_start',      scenario: msg
-  scenario_end          = create_event 'scenario_end',        scenario: msg
-  successful_scenario   = create_event 'successful_scenario', scenario: msg
-  failed_scenario       = create_event 'failed_scenario',     scenario: msg
+    error = new Error("expected #{obj1} got #{obj2}")
+    switch obj1.constructor
+      when Array
+        if obj1.length == obj2.length
+          key = 0
+          for value in obj1
+            throw new Error("not equal") unless value == obj2[key]
+            key += 1
+        else
+          throw error
+      when Number, String
+        throw error unless obj1 == obj2
+    @assertions += 1
 
-  @assert = (assertion) ->
-    if !assertion
-      listener.dispatchEvent(failed_assertion)
-      throw new Error
-    else
-      listener.dispatchEvent(successful_assertion)
+  assert: (expectation) ->
+    @assertions += 1
+    return throw new Error if !expectation
 
-  before = extract "before",  tests
-  after  = extract "after",   tests
-
-  scenario_was_failed = false
-
-  listener.dispatchEvent(scenario_start)
-  for key, test of tests
-    test_name = test_name: key
-    test_start.add      test_name
-    test_end.add        test_name
-    successful_test.add test_name
-    failed_test.add     test_name
-
-    listener.dispatchEvent(test_start)
-
+  exec: (test_name, test) ->
+    @before()
     try
-      before()
-      test()
-      after()
-      listener.dispatchEvent(successful_test)
+      initial_assertions = @assertions
+      test.apply(this)
+      @success  += 1
+      console.log " |-- #{test_name} SUCCESS (#{@assertions - initial_assertions} assertions)"
     catch error
-      failed_test.add test_message: error
-      scenario_was_failed = true
-      listener.dispatchEvent(failed_test)
+      @fail     += 1
+      console.error " |-- #{error}: #{test_name} FAILED"
     finally
-      listener.dispatchEvent(test_end)
+      @after()
+      @count    += 1
 
-  listener.dispatchEvent(scenario_end)
-
-  if scenario_was_failed
-    listener.dispatchEvent(failed_scenario)
-  else
-    listener.dispatchEvent(successful_scenario)
+@scenario = (description, tests) ->
+  pico = new Pico(description, tests)
+  pico.run()

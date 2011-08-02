@@ -14,6 +14,9 @@
       this.del(key);
       return delete this._expiration_hash[key];
     };
+    Gerbis.prototype._get_set = function(key) {
+      return this._unpack(this.get(key)) || [];
+    };
     Gerbis.prototype._expiration_hash = {};
     Gerbis.prototype.del = function() {
       var key, keys, _i, _len;
@@ -25,11 +28,11 @@
       return true;
     };
     Gerbis.prototype.set = function(key, value) {
-      this.storage.setItem(key, this._pack(value));
+      this.storage.setItem(key, value);
       return true;
     };
     Gerbis.prototype.get = function(key) {
-      return this._unpack(this.storage.getItem(key));
+      return this.storage.getItem(key);
     };
     Gerbis.prototype.exists = function(key) {
       return this.get(key) != null;
@@ -73,6 +76,73 @@
         }
       }
     };
+    Gerbis.prototype.append = function(key, value) {
+      if (this.exists(key)) {
+        return this.set(key, "" + (this.get(key)) + value);
+      }
+    };
+    Gerbis.prototype.auth = function(password) {
+      return true;
+    };
+    Gerbis.prototype.bgrewriteaof = function() {
+      return true;
+    };
+    Gerbis.prototype.bgsave = function() {
+      return true;
+    };
+    Gerbis.prototype.blpop = function() {};
+    Gerbis.prototype.lrange = function(key, start, end) {
+      var result, set;
+      end += 1;
+      set = this._get_set(key);
+      return result = set.slice(start, end);
+    };
+    Gerbis.prototype.lpush = function(key, item) {
+      var set;
+      set = this._get_set(key);
+      set.unshift(item);
+      return this.set(key, this._pack(set));
+    };
+    Gerbis.prototype.rpush = function(key, item) {
+      var set;
+      set = this._get_set(key);
+      set.push(item);
+      return this.set(key, this._pack(set));
+    };
+    Gerbis.prototype.decr = function(key) {
+      return this.decrby(key, 1);
+    };
+    Gerbis.prototype.decrby = function(key, quantity) {
+      var value;
+      if (quantity == null) {
+        quantity = 1;
+      }
+      if (this.exists(key)) {
+        value = parseInt(this.get(key));
+        if (typeof value === "number") {
+          value -= quantity;
+          this.set(key, value);
+          return value;
+        } else {
+          throw new Error;
+        }
+      }
+    };
+    Gerbis.prototype.incr = function(key) {
+      var value;
+      if (this.exists(key)) {
+        value = parseInt(this.get(key));
+        if (typeof value === "number") {
+          value += 1;
+          this.set(key, value);
+          return value;
+        } else {
+          throw new Error;
+        }
+      }
+    };
+    Gerbis.prototype.lpop = function(hash) {};
+    Gerbis.prototype.rpop = function(hash) {};
     return Gerbis;
   })();
 }).call(this);

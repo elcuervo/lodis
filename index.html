@@ -8,35 +8,7 @@
   <script type="text/javascript" src="picotest.js"></script>
   <script type="text/javascript" src="gerbis.js"></script>
   <script>
-    var events_listener = document.getElementById("scenarios");
-    var append_to = function(element, content){
-      li = document.createElement("li");
-      li.innerHTML = content;
-      element.appendChild(li);
-    };
-
-    events_listener.addEventListener("scenario_start", function(event){
-      append_to(document.getElementById("scenarios"), event.result.scenario);
-      console.log(event.result.scenario);
-    });
-
-    events_listener.addEventListener("test_start", function(event){
-      console.log(event.result.test_name);
-    });
-
-    events_listener.addEventListener("successful_assertion", function(event){
-      console.log(".");
-    });
-
-    events_listener.addEventListener("successful_test", function(event){
-      append_to(this, event.result.test_name);
-    });
-
-    events_listener.addEventListener("failed_test", function(event){
-      console.error(event.result.test_name + " " + event.result.test_message)
-    });
-
-    scenario("Redis commands", {
+    scenario("Redis Commands", {
       "before": function(){
         window.g = new Gerbis;
       },
@@ -46,47 +18,44 @@
       },
 
       "SET should set a key": function(){
-        assert(g.set('foo', 1));
+        this.assert(g.set('foo', 1));
       },
 
       "GET should get a key": function(){
         g.set('foo', 1);
-        assert(g.get('foo'))
+        this.assert(g.get('foo'))
       },
 
       "DEL should delete a key": function(){
-        assert(g.del('foo'));
-        assert(!g.exists('foo'));
+        this.assert(g.del('foo'));
+        this.assert(!g.exists('foo'));
       },
 
       "EXISTS should validate the existance of a key": function(){
         g.set('foo', 1);
-        assert(g.exists('foo'));
-        assert(!g.exists('bar'));
+        this.assert(g.exists('foo'));
+        this.assert(!g.exists('bar'));
       },
 
       "EXPIRE should expire a key in n seconds": function(){
         g.set("foo", 1);
-        assert(g.expire("foo", 2));
-        setTimeout(function(g) {
-          assert(!g.exists("foo"));
-        }, 3000, g);
+        this.assert(g.expire("foo", 2));
+        this.assert(!g.exists("foo"));
       },
 
       "TTL should show the remaining time of a given key after EXPIRE": function(){
         g.set("foo", 1);
         g.set("bar", 2);
         g.expire("foo", 3);
-        assert(g.ttl("foo") > 1);
-        assert(g.ttl("bar") == -1);
+
+        this.assert(g.ttl("foo") > 1);
+        this.assert(g.ttl("bar") == -1);
       },
 
       "EXPIREAT should expire a key in a given epoch time": function(){
         g.set("foo", 1);
         g.expireat('baz', new Date().getTime() + 2000)
-        setTimeout(function(g){
-          assert(!g.exists("foo"));
-        }, 3000, g);
+        this.assert(!g.exists("foo"));
       },
 
       "KEYS should search for given keys": function(){
@@ -94,14 +63,73 @@
         g.set('two',    2);
         g.set('three',  3);
 
-        assert(g.keys("t").indexOf("three") >= 0);
-        assert(g.keys("t").indexOf("two") >= 0);
-        assert(g.keys("ee$").indexOf('three') >= 0);
-        assert(g.keys("xxx").length == 0);
+        this.assert(g.keys("t").indexOf("three") >= 0);
+        this.assert(g.keys("t").indexOf("two") >= 0);
+        this.assert(g.keys("ee$").indexOf('three') >= 0);
+        this.assert(g.keys("xxx").length == 0);
+      },
+
+      "APPEND should append a value to a given key": function(){
+        g.set("foo", "Hello");
+        g.append("foo", " world");
+        this.assert(g.get("foo") == "Hello world");
+
+      },
+
+      "AUTH should accept password": function(){
+        this.assert(g.auth("god"));
+      },
+
+      "BGREWRITEAOF does nothing": function(){
+        this.assert(g.bgrewriteaof())
+      },
+
+      "BGSAVE does nothing": function(){
+        this.assert(g.bgsave())
+      },
+
+      "LRANGE should return a given range of a list": function(){
+        g.rpush("mylist", "one");
+        g.rpush("mylist", "two");
+        g.rpush("mylist", "three");
+
+        this.assert_equal(g.lrange("mylist", 0, 0),       ["one"]);
+        this.assert_equal(g.lrange("mylist", -3, 2),      ["one", "two", "three"]);
+        this.assert_equal(g.lrange("mylist", -100, 100),  ["one", "two", "three"]);
+        this.assert_equal(g.lrange("mylist", 5, 10),      []);
+      },
+
+      "LPUSH should add an item to the begining of the list": function(){
+        g.lpush("mylist", "two");
+        g.lpush("mylist", "one");
+
+        this.assert_equal(g.lrange("mylist", 0, 2), ["one", "two"]);
+      },
+
+      "RPUSH should add an item to the end of the list": function(){
+        g.rpush("mylist", "one");
+        g.rpush("mylist", "two");
+
+        this.assert_equal(g.lrange("mylist", 0, 2), ["one", "two"]);
+      },
+
+      "DECR should decrease the value of a given key": function(){
+        g.set("foo", 10);
+        this.assert_equal(g.decr("foo"), 9)
+      },
+
+      "DECRBY should decrease the value of a given key": function(){
+        g.set("foo", 10);
+        this.assert_equal(g.decrby("foo", 5), 5)
+      },
+
+      "INCR should increase the value of a given key": function(){
+        g.set("foo", 10);
+        this.assert_equal(g.incr("foo"), 11)
       },
 
 
-    }, events_listener);
+    });
 
   </script>
 
