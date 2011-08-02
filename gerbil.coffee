@@ -1,4 +1,4 @@
-class Pico
+class Gerbil
   success:  0
   fail:     0
   count:    0
@@ -56,5 +56,5 @@ class Pico
       @count    += 1
 
 @scenario = (description, tests) ->
-  pico = new Pico(description, tests)
-  pico.run()
+  g = new Gerbil(description, tests)
+  g.run()

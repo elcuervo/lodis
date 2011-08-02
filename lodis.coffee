@@ -1,4 +1,4 @@
-class @Gerbis
+class @Lodis
 
   constructor: ->
     this.storage = window.localStorage

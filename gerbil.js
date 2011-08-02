@@ -1,21 +1,21 @@
 (function() {
-  var Pico;
-  Pico = (function() {
-    Pico.prototype.success = 0;
-    Pico.prototype.fail = 0;
-    Pico.prototype.count = 0;
-    Pico.prototype.assertions = 0;
-    function Pico(description, tests) {
+  var Gerbil;
+  Gerbil = (function() {
+    Gerbil.prototype.success = 0;
+    Gerbil.prototype.fail = 0;
+    Gerbil.prototype.count = 0;
+    Gerbil.prototype.assertions = 0;
+    function Gerbil(description, tests) {
       this.description = description;
       this.tests = tests;
     }
-    Pico.prototype.extract = function(key, from) {
+    Gerbil.prototype.extract = function(key, from) {
       var value;
       value = from[key] || function() {};
       delete from[key];
       return value;
     };
-    Pico.prototype.run = function() {
+    Gerbil.prototype.run = function() {
       var key, value, _ref;
       console.log(this.description);
       this.before = this.extract("before", this.tests);
@@ -27,7 +27,7 @@
       }
       return console.warn("Results for " + this.description + " " + this.success + "/" + this.count + " tests. " + this.assertions + " assertions");
     };
-    Pico.prototype.assert_equal = function(obj1, obj2) {
+    Gerbil.prototype.assert_equal = function(obj1, obj2) {
       var error, key, value, _i, _len;
       if (!(obj1 != null) || !(obj2 != null)) {
         throw new Error;
@@ -59,13 +59,13 @@
       }
       return this.assertions += 1;
     };
-    Pico.prototype.assert = function(expectation) {
+    Gerbil.prototype.assert = function(expectation) {
       this.assertions += 1;
       if (!expectation) {
         throw new Error;
       }
     };
-    Pico.prototype.exec = function(test_name, test) {
+    Gerbil.prototype.exec = function(test_name, test) {
       var initial_assertions;
       this.before();
       try {
@@ -81,11 +81,11 @@
         this.count += 1;
       }
     };
-    return Pico;
+    return Gerbil;
   })();
   this.scenario = function(description, tests) {
-    var pico;
-    pico = new Pico(description, tests);
-    return pico.run();
+    var g;
+    g = new Gerbil(description, tests);
+    return g.run();
   };
 }).call(this);
