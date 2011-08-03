@@ -276,6 +276,32 @@
       value = this._pack(result);
       return this.set(hash_key, value);
     };
+    Lodis.prototype.hsetnx = function(hash_key, key, value) {
+      if (!this.exists(hash_key)) {
+        this.hset(hash_key, key, value);
+        return true;
+      } else {
+        return false;
+      }
+    };
+    Lodis.prototype.hvals = function(hash_key) {
+      if (this.exists(hash_key)) {
+        return this._get_from_hash(hash_key, {
+          with_keys: false,
+          with_values: true
+        });
+      }
+    };
+    Lodis.prototype.lindex = function(key, index) {
+      var hash;
+      if (this.exists(key)) {
+        hash = this._get_set(key);
+        if (index < 0) {
+          index = hash.length + index;
+        }
+        return hash[index] || false;
+      }
+    };
     Lodis.prototype.lpop = function(hash) {};
     Lodis.prototype.rpop = function(hash) {};
     return Lodis;

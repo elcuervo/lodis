@@ -39,13 +39,13 @@
   * HMGET key field [field ...] &#10003;
   * HMSET key field value [field value ...] &#10003;
   * HSET key field value &#10003;
-  * HSETNX key field value
-  * HVALS key
+  * HSETNX key field value &#10003;
+  * HVALS key &#10003;
   * INCR key &#10003;
   * INCRBY key increment &#10003;
   * INFO
   * LASTSAVE
-  * LINDEX key index
+  * LINDEX key index &#10003;
   * LINSERT key BEFORE|AFTER pivot value
   * LLEN key
   * LPOP key

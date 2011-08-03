@@ -185,6 +185,22 @@ class @Lodis
     value = this._pack(result)
     this.set(hash_key, value)
 
+  hsetnx: (hash_key, key, value) ->
+    if !this.exists(hash_key)
+      this.hset(hash_key, key, value)
+      true
+    else
+      false
+
+  hvals: (hash_key) ->
+    this._get_from_hash(hash_key, with_keys: false, with_values: true) if this.exists(hash_key)
+
+  lindex: (key, index) ->
+    if this.exists(key)
+      hash = this._get_set(key)
+      index = hash.length + index if index < 0
+      hash[index] or false
+
   lpop: (hash) ->
 
   rpop: (hash) ->

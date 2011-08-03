@@ -18,8 +18,10 @@
     Gerbil.prototype.run = function() {
       var key, value, _ref;
       console.log(this.description);
+      this.setup = this.extract("setup", this.tests);
       this.before = this.extract("before", this.tests);
       this.after = this.extract("after", this.tests);
+      this.setup();
       _ref = this.tests;
       for (key in _ref) {
         value = _ref[key];
@@ -28,8 +30,8 @@
       return console.warn("Results for " + this.description + " " + this.success + "/" + this.count + " tests. " + this.assertions + " assertions");
     };
     Gerbil.prototype.assert_equal = function(obj1, obj2) {
-      var error, key, value, _i, _len;
-      if (!(obj1 != null) || !(obj2 != null)) {
+      var error, key, value;
+      if (!obj1 || !obj2) {
         throw new Error("obj1 is " + obj1 + " and obj2 is " + obj2);
       }
       if (obj1.constructor !== obj2.constructor) {
@@ -39,13 +41,11 @@
       switch (obj1.constructor) {
         case Array:
           if (obj1.length === obj2.length) {
-            key = 0;
-            for (_i = 0, _len = obj1.length; _i < _len; _i++) {
-              value = obj1[_i];
+            for (key in obj1) {
+              value = obj1[key];
               if (value !== obj2[key]) {
                 throw error;
               }
-              key += 1;
             }
           } else {
             throw error;
@@ -57,10 +57,10 @@
             throw error;
           }
       }
-      return this.assertions += 1;
+      return current_scenario.assertions += 1;
     };
     Gerbil.prototype.assert = function(expectation) {
-      this.assertions += 1;
+      current_scenario.assertions += 1;
       if (!expectation) {
         throw new Error("assertion failed");
       }
@@ -84,8 +84,9 @@
     return Gerbil;
   })();
   this.scenario = function(description, tests) {
-    var g;
-    g = new Gerbil(description, tests);
-    return g.run();
+    this.current_scenario = new Gerbil(description, tests);
+    this.assert = current_scenario.assert;
+    this.assert_equal = current_scenario.assert_equal;
+    return current_scenario.run();
   };
 }).call(this);

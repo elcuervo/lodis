@@ -13,32 +13,32 @@ class Gerbil
 
   run: ->
     console.log @description
+    @setup =  this.extract "setup",   @tests
     @before = this.extract "before",  @tests
     @after  = this.extract "after",   @tests
-    for key, value of @tests
-      this.exec key, value
+
+    @setup()
+    this.exec key, value for key, value of @tests
     console.warn "Results for #{@description} #{@success}/#{@count} tests. #{@assertions} assertions"
 
   assert_equal: (obj1, obj2) ->
-    return throw new Error("obj1 is #{obj1} and obj2 is #{obj2}") if !obj1? or !obj2?
+    return throw new Error("obj1 is #{obj1} and obj2 is #{obj2}") if !obj1 or !obj2
     return throw new Error("types are different obj1: #{obj1.constructor}, obj2: #{obj2.constructor}") if obj1.constructor != obj2.constructor
 
     error = new Error("expected #{obj2} got #{obj1}")
     switch obj1.constructor
       when Array
         if obj1.length == obj2.length
-          key = 0
-          for value in obj1
+          for key, value of obj1
             throw error unless value == obj2[key]
-            key += 1
         else
           throw error
       when Number, String
         throw error unless obj1 == obj2
-    @assertions += 1
+    current_scenario.assertions += 1
 
   assert: (expectation) ->
-    @assertions += 1
+    current_scenario.assertions += 1
     return throw new Error("assertion failed") if !expectation
 
   exec: (test_name, test) ->
@@ -56,5 +56,7 @@ class Gerbil
       @count    += 1
 
 @scenario = (description, tests) ->
-  g = new Gerbil(description, tests)
-  g.run()
+  @current_scenario = new Gerbil(description, tests)
+  @assert = current_scenario.assert
+  @assert_equal = current_scenario.assert_equal
+  current_scenario.run()
