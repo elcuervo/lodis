@@ -165,6 +165,43 @@
         this.assert_equal(l.get("foo"), "World");
       },
 
+      "HSET should set a key value for a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+        this.assert_equal(l.hget("foo", "baz"), "World");
+      },
+
+      "HGET should get value for the key of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        this.assert_equal(l.hget("foo", "bar"), "Hello");
+      },
+
+      "HGETALL should get all the values of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+        this.assert_equal(l.hgetall("foo"), ["bar", "Hello", "baz", "World"]);
+      },
+
+      "HEXISTS should check the validity of a key in a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        this.assert(l.hexists("foo", "bar"));
+      },
+
+      "HINCRBY should change the value of a hash field": function(){
+        l.hset("foo", "bar", 5);
+
+        this.assert_equal(l.hincrby( "foo", "bar", 1), 6);
+        this.assert_equal(l.hincrby( "foo", "bar", -1), 5);
+        this.assert_equal(l.hincrby( "foo", "bar", -10), -5);
+      },
+
+      "HKEYS should return all the keys of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+
+        this.assert_equal(l.hkeys("foo"), ["bar", "baz"]);
+      },
+
     });
 
   </script>

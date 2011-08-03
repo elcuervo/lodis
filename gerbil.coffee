@@ -20,8 +20,8 @@ class Gerbil
     console.warn "Results for #{@description} #{@success}/#{@count} tests. #{@assertions} assertions"
 
   assert_equal: (obj1, obj2) ->
-    return throw new Error if !obj1? or !obj2?
-    return throw new Error("diff") if obj1.constructor != obj2.constructor
+    return throw new Error("obj1 is #{obj1} and obj2 is #{obj2}") if !obj1? or !obj2?
+    return throw new Error("types are different obj1: #{obj1.constructor}, obj2: #{obj2.constructor}") if obj1.constructor != obj2.constructor
 
     error = new Error("expected #{obj2} got #{obj1}")
     switch obj1.constructor

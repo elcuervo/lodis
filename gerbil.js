@@ -30,10 +30,10 @@
     Gerbil.prototype.assert_equal = function(obj1, obj2) {
       var error, key, value, _i, _len;
       if (!(obj1 != null) || !(obj2 != null)) {
-        throw new Error;
+        throw new Error("obj1 is " + obj1 + " and obj2 is " + obj2);
       }
       if (obj1.constructor !== obj2.constructor) {
-        throw new Error("diff");
+        throw new Error("types are different obj1: " + obj1.constructor + ", obj2: " + obj2.constructor);
       }
       error = new Error("expected " + obj2 + " got " + obj1);
       switch (obj1.constructor) {

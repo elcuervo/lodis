@@ -14,8 +14,30 @@
       this.del(key);
       return delete this._expiration_hash[key];
     };
+    Lodis.prototype._get_set_or_default = function(key, default_value) {
+      return this._unpack(this.get(key)) || default_value;
+    };
     Lodis.prototype._get_set = function(key) {
-      return this._unpack(this.get(key)) || [];
+      return this._get_set_or_default(key, []);
+    };
+    Lodis.prototype._get_hash = function(key) {
+      return this._get_set_or_default(key, {});
+    };
+    Lodis.prototype._get_from_hash = function(key, with_values) {
+      var hash, result, value;
+      if (with_values == null) {
+        with_values = false;
+      }
+      hash = this._get_hash(key);
+      result = [];
+      for (key in hash) {
+        value = hash[key];
+        result.push(key);
+        if (with_values) {
+          result.push(value);
+        }
+      }
+      return result;
     };
     Lodis.prototype._alter_int_value = function(key, quantity) {
       var value;
@@ -168,6 +190,49 @@
         old_value = this.get(key);
         this.set(key, value);
         return old_value;
+      }
+    };
+    Lodis.prototype.hset = function(hash_key, key, value) {
+      var hash;
+      hash = this._get_hash(hash_key);
+      hash[key] = value;
+      value = this._pack(hash);
+      this.set(hash_key, value);
+      return true;
+    };
+    Lodis.prototype.hget = function(hash_key, key) {
+      var hash;
+      if (this.exists(hash_key)) {
+        hash = this._get_hash(hash_key);
+        return hash[key];
+      }
+    };
+    Lodis.prototype.hgetall = function(hash_key) {
+      var with_values;
+      if (this.exists(hash_key)) {
+        return this._get_from_hash(hash_key, with_values = true);
+      }
+    };
+    Lodis.prototype.hexists = function(hash_key, key) {
+      return this.hget(hash_key, key) != null;
+    };
+    Lodis.prototype.hkeys = function(hash_key) {
+      var with_values;
+      if (this.exists(hash_key)) {
+        return this._get_from_hash(hash_key, with_values = false);
+      }
+    };
+    Lodis.prototype.hincrby = function(hash_key, key, quantity) {
+      var new_value, old_value;
+      if (this.hexists(hash_key, key)) {
+        old_value = parseInt(this.hget(hash_key, key));
+        if (typeof old_value === "number") {
+          new_value = old_value + quantity;
+          this.hset(hash_key, key, new_value);
+          return new_value;
+        } else {
+          throw new Error("Invalid type");
+        }
       }
     };
     Lodis.prototype.lpop = function(hash) {};

@@ -11,8 +11,22 @@ class @Lodis
     this.del(key)
     delete this._expiration_hash[key]
 
+  _get_set_or_default: (key, default_value) ->
+    this._unpack(this.get(key)) or default_value
+
   _get_set: (key) ->
-    this._unpack(this.get(key)) or []
+    this._get_set_or_default(key, [])
+
+  _get_hash: (key) ->
+    this._get_set_or_default(key, {})
+
+  _get_from_hash: (key, with_values = false) ->
+    hash = this._get_hash(key)
+    result = []
+    for key, value of hash
+      result.push key
+      result.push value if with_values
+    result
 
   _alter_int_value: (key, quantity) ->
    if this.exists(key)
@@ -127,6 +141,37 @@ class @Lodis
       old_value = this.get(key)
       this.set(key, value)
       old_value
+
+  hset: (hash_key, key, value) ->
+    hash = this._get_hash(hash_key)
+    hash[key] = value
+    value = this._pack(hash)
+    this.set(hash_key, value)
+    true
+
+  hget: (hash_key, key) ->
+    if this.exists(hash_key)
+      hash = this._get_hash(hash_key)
+      hash[key]
+
+  hgetall: (hash_key) ->
+    this._get_from_hash(hash_key, with_values = true) if this.exists(hash_key)
+
+  hexists: (hash_key, key) ->
+    this.hget(hash_key, key)?
+
+  hkeys: (hash_key) ->
+    this._get_from_hash(hash_key, with_values = false) if this.exists(hash_key)
+
+  hincrby: (hash_key, key, quantity) ->
+    if this.hexists(hash_key, key)
+      old_value = parseInt this.hget(hash_key, key)
+      if typeof old_value is "number"
+        new_value = old_value + quantity
+        this.hset(hash_key, key, new_value)
+        new_value
+      else
+        throw new Error("Invalid type")
 
   lpop: (hash) ->
 

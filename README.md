@@ -30,11 +30,11 @@
   GETBIT key offset
   * GETRANGE key start end
   * GETSET key value
-  HDEL key field [field ...]
-  HEXISTS key field
-  HGET key field
-  HGETALL key
-  HINCRBY key field increment
+  * HDEL key field [field ...]
+  * HEXISTS key field
+  * HGET key field
+  * HGETALL key
+  * HINCRBY key field increment
   HKEYS key
   HLEN key
   HMGET key field [field ...]
