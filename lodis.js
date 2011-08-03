@@ -1,5 +1,10 @@
 (function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __indexOf = Array.prototype.indexOf || function(item) {
+    for (var i = 0, l = this.length; i < l; i++) {
+      if (this[i] === item) return i;
+    }
+    return -1;
+  }, __slice = Array.prototype.slice;
   this.Lodis = (function() {
     function Lodis() {
       this._expire_key = __bind(this._expire_key, this);      this.storage = window.localStorage;
@@ -23,17 +28,23 @@
     Lodis.prototype._get_hash = function(key) {
       return this._get_set_or_default(key, {});
     };
-    Lodis.prototype._get_from_hash = function(key, with_values) {
+    Lodis.prototype._get_from_hash = function(key, options) {
       var hash, result, value;
-      if (with_values == null) {
-        with_values = false;
+      if (options == null) {
+        options = {
+          with_keys: true,
+          with_values: true,
+          only: []
+        };
       }
       hash = this._get_hash(key);
       result = [];
       for (key in hash) {
         value = hash[key];
-        result.push(key);
-        if (with_values) {
+        if (options["with_keys"]) {
+          result.push(key);
+        }
+        if (options["with_values"] || (options["only"] && __indexOf.call(options["only"], key) >= 0)) {
           result.push(value);
         }
       }
@@ -208,18 +219,24 @@
       }
     };
     Lodis.prototype.hgetall = function(hash_key) {
-      var with_values;
       if (this.exists(hash_key)) {
-        return this._get_from_hash(hash_key, with_values = true);
+        return this._get_from_hash(hash_key);
       }
     };
     Lodis.prototype.hexists = function(hash_key, key) {
       return this.hget(hash_key, key) != null;
     };
     Lodis.prototype.hkeys = function(hash_key) {
-      var with_values;
       if (this.exists(hash_key)) {
-        return this._get_from_hash(hash_key, with_values = false);
+        return this._get_from_hash(hash_key, {
+          with_keys: true,
+          with_values: false
+        });
+      }
+    };
+    Lodis.prototype.hlen = function(hash_key) {
+      if (this.exists(hash_key)) {
+        return this.hkeys(hash_key).length;
       }
     };
     Lodis.prototype.hincrby = function(hash_key, key, quantity) {
@@ -233,6 +250,17 @@
         } else {
           throw new Error("Invalid type");
         }
+      }
+    };
+    Lodis.prototype.hmget = function() {
+      var hash_key, keys;
+      hash_key = arguments[0], keys = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (this.exists(hash_key)) {
+        return this._get_from_hash(hash_key, {
+          with_values: true,
+          with_keys: false,
+          only: keys
+        });
       }
     };
     Lodis.prototype.lpop = function(hash) {};

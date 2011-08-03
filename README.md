@@ -35,9 +35,9 @@
   * HGET key field
   * HGETALL key
   * HINCRBY key field increment
-  HKEYS key
-  HLEN key
-  HMGET key field [field ...]
+  * HKEYS key
+  * HLEN key
+  * HMGET key field [field ...]
   HMSET key field value [field value ...]
   HSET key field value
   HSETNX key field value

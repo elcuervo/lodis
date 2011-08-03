@@ -20,12 +20,12 @@ class @Lodis
   _get_hash: (key) ->
     this._get_set_or_default(key, {})
 
-  _get_from_hash: (key, with_values = false) ->
+  _get_from_hash: (key, options = with_keys: true, with_values: true, only: []) ->
     hash = this._get_hash(key)
     result = []
     for key, value of hash
-      result.push key
-      result.push value if with_values
+      result.push key   if options["with_keys"]
+      result.push value if options["with_values"] or ( options["only"] and key in options["only"])
     result
 
   _alter_int_value: (key, quantity) ->
@@ -155,13 +155,16 @@ class @Lodis
       hash[key]
 
   hgetall: (hash_key) ->
-    this._get_from_hash(hash_key, with_values = true) if this.exists(hash_key)
+    this._get_from_hash(hash_key) if this.exists(hash_key)
 
   hexists: (hash_key, key) ->
     this.hget(hash_key, key)?
 
   hkeys: (hash_key) ->
-    this._get_from_hash(hash_key, with_values = false) if this.exists(hash_key)
+    this._get_from_hash(hash_key, with_keys: true, with_values: false) if this.exists(hash_key)
+
+  hlen: (hash_key) ->
+    this.hkeys(hash_key).length if this.exists(hash_key)
 
   hincrby: (hash_key, key, quantity) ->
     if this.hexists(hash_key, key)
@@ -172,6 +175,9 @@ class @Lodis
         new_value
       else
         throw new Error("Invalid type")
+
+  hmget: (hash_key, keys...) ->
+    this._get_from_hash(hash_key, with_values: true, with_keys: false, only: keys) if this.exists(hash_key)
 
   lpop: (hash) ->
 

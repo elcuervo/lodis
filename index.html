@@ -202,6 +202,20 @@
         this.assert_equal(l.hkeys("foo"), ["bar", "baz"]);
       },
 
+      "HLEN should return the length of the key of a given hash": function (){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+
+        this.assert_equal(l.hlen("foo"), 2);
+      },
+
+      "HMGET should return the values of a given set of keys of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+
+        this.assert_equal(l.hmget("foo", ["bar", "baz"]), ["Hello", "World"]);
+      },
+
     });
 
   </script>
