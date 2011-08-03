@@ -23,13 +23,13 @@ class Gerbil
     return throw new Error if !obj1? or !obj2?
     return throw new Error("diff") if obj1.constructor != obj2.constructor
 
-    error = new Error("expected #{obj1} got #{obj2}")
+    error = new Error("expected #{obj2} got #{obj1}")
     switch obj1.constructor
       when Array
         if obj1.length == obj2.length
           key = 0
           for value in obj1
-            throw new Error("not equal") unless value == obj2[key]
+            throw error unless value == obj2[key]
             key += 1
         else
           throw error
@@ -39,7 +39,7 @@ class Gerbil
 
   assert: (expectation) ->
     @assertions += 1
-    return throw new Error if !expectation
+    return throw new Error("assertion failed") if !expectation
 
   exec: (test_name, test) ->
     @before()

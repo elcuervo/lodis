@@ -35,7 +35,7 @@
       if (obj1.constructor !== obj2.constructor) {
         throw new Error("diff");
       }
-      error = new Error("expected " + obj1 + " got " + obj2);
+      error = new Error("expected " + obj2 + " got " + obj1);
       switch (obj1.constructor) {
         case Array:
           if (obj1.length === obj2.length) {
@@ -43,7 +43,7 @@
             for (_i = 0, _len = obj1.length; _i < _len; _i++) {
               value = obj1[_i];
               if (value !== obj2[key]) {
-                throw new Error("not equal");
+                throw error;
               }
               key += 1;
             }
@@ -62,7 +62,7 @@
     Gerbil.prototype.assert = function(expectation) {
       this.assertions += 1;
       if (!expectation) {
-        throw new Error;
+        throw new Error("assertion failed");
       }
     };
     Gerbil.prototype.exec = function(test_name, test) {

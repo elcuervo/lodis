@@ -14,7 +14,7 @@
       },
 
       "after": function(){
-        l.storage.clear(); // Should use a Redis command
+        l.flushall();
       },
 
       "SET should set a key": function(){
@@ -118,7 +118,7 @@
         this.assert_equal(l.decr("foo"), 9)
       },
 
-      "DECRBY should decrease the value of a given key": function(){
+      "DECRBY should decrease the value of a given key by an int": function(){
         l.set("foo", 10);
         this.assert_equal(l.decrby("foo", 5), 5)
       },
@@ -128,6 +128,42 @@
         this.assert_equal(l.incr("foo"), 11)
       },
 
+      "INCRBY should increase the value of a given key by an int": function(){
+        l.set("foo", 10);
+        this.assert_equal(l.incrby("foo", 5), 15)
+      },
+
+      "ECHO should return the given message": function(){
+        message = "Hello World!";
+        this.assert_equal(l.echo(message), message);
+      },
+
+      "FLUSHALL should clean the database": function(){
+        l.set("foo", 1);
+        l.flushall();
+        this.assert(!l.exists("foo"));
+      },
+
+      "FLUSHDB should clean the database": function(){
+        l.set("foo", 1);
+        l.flushdb();
+        this.assert(!l.exists("foo"));
+      },
+
+      "GETRANGE should get a substring of a value": function(){
+        l.set("foo", "This is a string");
+        this.assert_equal(l.getrange("foo", 0, 3), "This");
+        this.assert_equal(l.getrange("foo", -3, -1), "ing");
+        this.assert_equal(l.getrange("foo", 0, -1), "This is a string");
+        this.assert_equal(l.getrange("foo", 10, 100), "string");
+      },
+
+      "GETSET should set a key but return the old value": function(){
+        l.set("foo", "Hello");
+
+        this.assert_equal(l.getset("foo", "World"), "Hello");
+        this.assert_equal(l.get("foo"), "World");
+      },
 
     });
 

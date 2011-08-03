@@ -23,13 +23,13 @@
   * DECR key
   * DECRBY key decrement
   DISCARD
-  ECHO message
+  * ECHO message
   EXEC
-  FLUSHALL
-  FLUSHDB
+  * FLUSHALL
+  * FLUSHDB
   GETBIT key offset
-  GETRANGE key start end
-  GETSET key value
+  * GETRANGE key start end
+  * GETSET key value
   HDEL key field [field ...]
   HEXISTS key field
   HGET key field
@@ -43,7 +43,7 @@
   HSETNX key field value
   HVALS key
   * INCR key
-  INCRBY key increment
+  * INCRBY key increment
   INFO
   LASTSAVE
   LINDEX key index

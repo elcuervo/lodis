@@ -14,6 +14,16 @@ class @Lodis
   _get_set: (key) ->
     this._unpack(this.get(key)) or []
 
+  _alter_int_value: (key, quantity) ->
+   if this.exists(key)
+      value = parseInt this.get(key)
+      if typeof value is "number"
+        value = value + quantity
+        this.set(key, value)
+        value
+      else
+        throw new Error
+
   _expiration_hash: {}
 
   del: (keys...) ->
@@ -88,25 +98,35 @@ class @Lodis
   decr: (key) ->
     this.decrby(key, 1)
 
-  decrby: (key, quantity = 1) ->
-    if this.exists(key)
-      value = parseInt this.get(key)
-      if typeof value is "number"
-        value -= quantity
-        this.set(key, value)
-        value
-      else
-        throw new Error
-
   incr: (key) ->
+    this.incrby(key, 1)
+
+  decrby: (key, quantity = 1) ->
+    this._alter_int_value(key, -quantity)
+
+  incrby: (key, quantity = 1) ->
+    this._alter_int_value(key, quantity)
+
+  echo: (message) -> message
+
+  flushall: ->
+    this.storage.clear()
+
+  flushdb: ->
+    this.flushall()
+
+  getrange: (key, start, end) ->
     if this.exists(key)
-      value = parseInt this.get(key)
-      if typeof value is "number"
-        value += 1
-        this.set(key, value)
-        value
-      else
-        throw new Error
+      string = this.get(key)
+      start = string.length + start if start < 0
+      end   = string.length + end   if end   < 0
+      string.substr start, end + 1
+
+  getset: (key, value) ->
+    if this.exists(key)
+      old_value = this.get(key)
+      this.set(key, value)
+      old_value
 
   lpop: (hash) ->
 

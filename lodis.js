@@ -17,6 +17,19 @@
     Lodis.prototype._get_set = function(key) {
       return this._unpack(this.get(key)) || [];
     };
+    Lodis.prototype._alter_int_value = function(key, quantity) {
+      var value;
+      if (this.exists(key)) {
+        value = parseInt(this.get(key));
+        if (typeof value === "number") {
+          value = value + quantity;
+          this.set(key, value);
+          return value;
+        } else {
+          throw new Error;
+        }
+      }
+    };
     Lodis.prototype._expiration_hash = {};
     Lodis.prototype.del = function() {
       var key, keys, _i, _len;
@@ -112,33 +125,49 @@
     Lodis.prototype.decr = function(key) {
       return this.decrby(key, 1);
     };
+    Lodis.prototype.incr = function(key) {
+      return this.incrby(key, 1);
+    };
     Lodis.prototype.decrby = function(key, quantity) {
-      var value;
       if (quantity == null) {
         quantity = 1;
       }
+      return this._alter_int_value(key, -quantity);
+    };
+    Lodis.prototype.incrby = function(key, quantity) {
+      if (quantity == null) {
+        quantity = 1;
+      }
+      return this._alter_int_value(key, quantity);
+    };
+    Lodis.prototype.echo = function(message) {
+      return message;
+    };
+    Lodis.prototype.flushall = function() {
+      return this.storage.clear();
+    };
+    Lodis.prototype.flushdb = function() {
+      return this.flushall();
+    };
+    Lodis.prototype.getrange = function(key, start, end) {
+      var string;
       if (this.exists(key)) {
-        value = parseInt(this.get(key));
-        if (typeof value === "number") {
-          value -= quantity;
-          this.set(key, value);
-          return value;
-        } else {
-          throw new Error;
+        string = this.get(key);
+        if (start < 0) {
+          start = string.length + start;
         }
+        if (end < 0) {
+          end = string.length + end;
+        }
+        return string.substr(start, end + 1);
       }
     };
-    Lodis.prototype.incr = function(key) {
-      var value;
+    Lodis.prototype.getset = function(key, value) {
+      var old_value;
       if (this.exists(key)) {
-        value = parseInt(this.get(key));
-        if (typeof value === "number") {
-          value += 1;
-          this.set(key, value);
-          return value;
-        } else {
-          throw new Error;
-        }
+        old_value = this.get(key);
+        this.set(key, value);
+        return old_value;
       }
     };
     Lodis.prototype.lpop = function(hash) {};
