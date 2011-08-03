@@ -216,6 +216,13 @@
         this.assert_equal(l.hmget("foo", ["bar", "baz"]), ["Hello", "World"]);
       },
 
+      "HMSET should set a group of key and values for a given hash": function(){
+        l.hmset("foo", "bar", "Hello", "baz", "World");
+
+        this.assert_equal(l.hget("foo", "bar"), "Hello");
+        this.assert_equal(l.hget("foo", "baz"), "World");
+      },
+
     });
 
   </script>

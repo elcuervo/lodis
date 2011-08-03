@@ -263,6 +263,19 @@
         });
       }
     };
+    Lodis.prototype.hmset = function() {
+      var hash_key, i, keys_and_values, result, value;
+      hash_key = arguments[0], keys_and_values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      result = {};
+      for (i in keys_and_values) {
+        value = keys_and_values[i];
+        if (i % 2) {
+          result[keys_and_values[i - 1]] = value;
+        }
+      }
+      value = this._pack(result);
+      return this.set(hash_key, value);
+    };
     Lodis.prototype.lpop = function(hash) {};
     Lodis.prototype.rpop = function(hash) {};
     return Lodis;

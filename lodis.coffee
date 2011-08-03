@@ -179,6 +179,12 @@ class @Lodis
   hmget: (hash_key, keys...) ->
     this._get_from_hash(hash_key, with_values: true, with_keys: false, only: keys) if this.exists(hash_key)
 
+  hmset: (hash_key, keys_and_values...) ->
+    result = {}
+    result[keys_and_values[i-1]] = value for i, value of keys_and_values when i % 2
+    value = this._pack(result)
+    this.set(hash_key, value)
+
   lpop: (hash) ->
 
   rpop: (hash) ->
