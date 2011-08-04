@@ -261,6 +261,13 @@
         assert_equal(l.lrange("foo", 0, -1), ["Hello", "There", "Programming", "World", "!"]);
       },
 
+      "LLEN should return the length of a list": function(){
+        l.lpush("foo", "World");
+        l.lpush("foo", "Hello");
+
+        assert_equal(l.llen("foo"), 2);
+      },
+
     });
 
   </script>

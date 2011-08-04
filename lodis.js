@@ -325,6 +325,13 @@
         return this.set(key, value);
       }
     };
+    Lodis.prototype.llen = function(key) {
+      var set;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        return set.length;
+      }
+    };
     Lodis.prototype.lpop = function(hash) {};
     Lodis.prototype.rpop = function(hash) {};
     return Lodis;
