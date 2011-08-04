@@ -83,10 +83,10 @@
   * LREM key count value &#10003;
   * LSET key index value &#10003;
   * LTRIM key start stop &#10003;
-  * MGET key [key ...]
+  * MGET key [key ...] &#10003;
   * MONITOR
   * MOVE key db
-  * MSET key value [key value ...]
+  * MSET key value [key value ...] &#10003;
   * MSETNX key value [key value ...]
   * MULTI
   * OBJECT subcommand [arguments [arguments ...]]

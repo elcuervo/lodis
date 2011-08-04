@@ -306,13 +306,27 @@
         assert_equal(l.lrange("foo", 0, -1), ["four", "five", "three"]);
       },
 
-      "LTRIM should with a start and an end for a given list": function(){
+      "LTRIM should trim a set with a start and an end": function(){
         l.rpush("foo", "one");
         l.rpush("foo", "two");
         l.rpush("foo", "three");
         l.ltrim("foo", 1, -1);
 
         assert_equal(l.lrange("foo", 0, -1), ["two", "three"]);
+      },
+
+      "MGET should get the values for a given keys in a set": function(){
+        l.set("foo", "Hello");
+        l.set("bar", "World");
+
+        assert_equal(l.mget("foo", "bar", "dude"), ["Hello", "World", null]);
+      },
+
+      "MSET should set keys and values with a single command": function(){
+        l.mset("foo", "Hello", "bar", "World");
+
+        assert_equal(l.get("foo"), "Hello");
+        assert_equal(l.get("bar"), "World");
       },
 
     });

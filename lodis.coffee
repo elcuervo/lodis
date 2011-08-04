@@ -267,5 +267,13 @@ class @Lodis
       result = set[start..end]
       this._set_packed(key, result)
 
+  mget: (keys...) ->
+    result = []
+    result.push this.get(key) for key in keys
+    result
+
+  mset: (keys_and_values...) ->
+    this.set(keys_and_values[i-1], value) for i, value of keys_and_values when i % 2
+
 
   rpop: (key) ->
