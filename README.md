@@ -150,3 +150,8 @@
   * ZREVRANK key member
   * ZSCORE key member
   * ZUNIONSTORE destination numkeys key [key ...] [WEIGHTS weight [weight ...]] [AGGREGATE SUM|MIN|MAX]
+
+
+## TODO
+  * Store expirations within Lodis itself to avoid expiration dates on reload
+  * Sync with Redis via HTTP?
