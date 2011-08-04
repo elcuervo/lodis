@@ -82,7 +82,7 @@
   * LRANGE key start stop &#10003;
   * LREM key count value &#10003;
   * LSET key index value &#10003;
-  * LTRIM key start stop
+  * LTRIM key start stop &#10003;
   * MGET key [key ...]
   * MONITOR
   * MOVE key db

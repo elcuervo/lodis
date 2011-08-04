@@ -28,6 +28,10 @@
     Lodis.prototype._get_hash = function(key) {
       return this._get_set_or_default(key, {});
     };
+    Lodis.prototype._set_packed = function(key, value) {
+      value = this._pack(value);
+      return this.set(key, value);
+    };
     Lodis.prototype._get_from_hash = function(key, options) {
       var hash, result, value;
       if (options == null) {
@@ -154,13 +158,13 @@
       var set;
       set = this._get_set(key);
       set.unshift(item);
-      return this.set(key, this._pack(set));
+      return this._set_packed(key, set);
     };
     Lodis.prototype.rpush = function(key, item) {
       var set;
       set = this._get_set(key);
       set.push(item);
-      return this.set(key, this._pack(set));
+      return this._set_packed(key, set);
     };
     Lodis.prototype.decr = function(key) {
       return this.decrby(key, 1);
@@ -214,8 +218,7 @@
       var hash;
       hash = this._get_hash(hash_key);
       hash[key] = value;
-      value = this._pack(hash);
-      this.set(hash_key, value);
+      this._set_packed(hash_key, hash);
       return true;
     };
     Lodis.prototype.hget = function(hash_key, key) {
@@ -280,8 +283,7 @@
           result[keys_and_values[i - 1]] = value;
         }
       }
-      value = this._pack(result);
-      return this.set(hash_key, value);
+      return this._set_packed(hash_key, result);
     };
     Lodis.prototype.hsetnx = function(hash_key, key, value) {
       if (!this.exists(hash_key)) {
@@ -325,8 +327,7 @@
         _ref = [set.slice(0, reference_value), set.slice(reference_value)], left_side = _ref[0], right_side = _ref[1];
         result = left_side.concat([value]);
         result = result.concat(right_side);
-        value = this._pack(result);
-        return this.set(key, value);
+        return this._set_packed(key, result);
       }
     };
     Lodis.prototype.llen = function(key) {
@@ -341,7 +342,7 @@
       if (this.exists(key)) {
         set = this._get_set(key);
         value = set.slice(1);
-        return this.set(key, this._pack(value));
+        return this._set_packed(key, value);
       }
     };
     Lodis.prototype.lpushx = function(key, value) {
@@ -371,7 +372,7 @@
         if (count < 0) {
           result = result.reverse();
         }
-        return this.set(key, this._pack(result));
+        return this._set_packed(key, result);
       }
     };
     Lodis.prototype.lset = function(key, index, value) {
@@ -382,7 +383,18 @@
           index = set.length + index;
         }
         set[index] = value;
-        return this.set(key, this._pack(set));
+        return this._set_packed(key, set);
+      }
+    };
+    Lodis.prototype.ltrim = function(key, start, end) {
+      var result, set;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        if (end < 0) {
+          end = set.length + end;
+        }
+        result = set.slice(start, (end + 1) || 9e9);
+        return this._set_packed(key, result);
       }
     };
     Lodis.prototype.rpop = function(key) {};

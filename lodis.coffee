@@ -20,6 +20,10 @@ class @Lodis
   _get_hash: (key) ->
     this._get_set_or_default(key, {})
 
+  _set_packed: (key, value) ->
+    value = this._pack(value)
+    this.set(key, value)
+
   _get_from_hash: (key, options = with_keys: true, with_values: true, only: []) ->
     hash = this._get_hash(key)
     result = []
@@ -105,12 +109,12 @@ class @Lodis
   lpush: (key, item) ->
     set = this._get_set(key)
     set.unshift(item)
-    this.set key, this._pack(set)
+    this._set_packed(key, set)
 
   rpush: (key, item) ->
     set = this._get_set(key)
     set.push(item)
-    this.set key, this._pack(set)
+    this._set_packed(key, set)
 
   decr: (key) ->
     this.decrby(key, 1)
@@ -148,8 +152,7 @@ class @Lodis
   hset: (hash_key, key, value) ->
     hash = this._get_hash(hash_key)
     hash[key] = value
-    value = this._pack(hash)
-    this.set(hash_key, value)
+    this._set_packed(hash_key, hash)
     true
 
   hget: (hash_key, key) ->
@@ -185,8 +188,7 @@ class @Lodis
   hmset: (hash_key, keys_and_values...) ->
     result = {}
     result[keys_and_values[i-1]] = value for i, value of keys_and_values when i % 2
-    value = this._pack(result)
-    this.set(hash_key, value)
+    this._set_packed(hash_key, result)
 
   hsetnx: (hash_key, key, value) ->
     if !this.exists(hash_key)
@@ -216,8 +218,7 @@ class @Lodis
 
       result = left_side.concat([value])
       result = result.concat(right_side)
-      value = this._pack(result)
-      this.set(key, value)
+      this._set_packed(key, result)
 
   llen: (key) ->
     if this.exists(key)
@@ -228,7 +229,7 @@ class @Lodis
     if this.exists(key)
       set = this._get_set(key)
       value = set[1..-1]
-      this.set key, this._pack(value)
+      this._set_packed(key, value)
 
   lpushx: (key, value) ->
     if this.exists(key)
@@ -250,13 +251,21 @@ class @Lodis
           result.push value
 
       result = result.reverse() if count < 0
-      this.set(key, this._pack(result))
+      this._set_packed(key, result)
 
   lset: (key, index, value) ->
     if this.exists(key)
       set = this._get_set(key)
       index = set.length + index if index < 0
       set[index] = value
-      this.set(key, this._pack(set))
+      this._set_packed(key, set)
+
+  ltrim: (key, start, end) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      end = set.length + end if end < 0
+      result = set[start..end]
+      this._set_packed(key, result)
+
 
   rpop: (key) ->

@@ -306,6 +306,15 @@
         assert_equal(l.lrange("foo", 0, -1), ["four", "five", "three"]);
       },
 
+      "LTRIM should with a start and an end for a given list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.ltrim("foo", 1, -1);
+
+        assert_equal(l.lrange("foo", 0, -1), ["two", "three"]);
+      },
+
     });
 
   </script>
