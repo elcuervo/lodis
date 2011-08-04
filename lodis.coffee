@@ -97,6 +97,7 @@ class @Lodis
   lrange: (key, start, end) ->
     end += 1
     set = this._get_set(key)
+    end = set.length + end if end < 1
     result = set.slice(start, end)
 
   lpush: (key, item) ->
@@ -200,6 +201,21 @@ class @Lodis
       hash = this._get_set(key)
       index = hash.length + index if index < 0
       hash[index] or false
+
+  linsert: (key, direction, reference_value, value) ->
+    if this.exists(key)
+      direction = switch direction.toUpperCase()
+        when "BEFORE" then -1
+        when "AFTER"  then 1
+
+      set = this._get_set(key)
+      reference_value = set.indexOf(reference_value) + direction
+      [left_side, right_side] = [set[0...reference_value], set[reference_value..-1]]
+
+      result = left_side.concat([value])
+      result = result.concat(right_side)
+      value = this._pack(result)
+      this.set(key, value)
 
   lpop: (hash) ->
 

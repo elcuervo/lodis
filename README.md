@@ -46,7 +46,7 @@
   * INFO
   * LASTSAVE
   * LINDEX key index &#10003;
-  * LINSERT key BEFORE|AFTER pivot value
+  * LINSERT key BEFORE|AFTER pivot value &#10003;
   * LLEN key
   * LPOP key
   * LPUSH key value [value ...] &#10003;

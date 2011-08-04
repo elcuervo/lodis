@@ -141,6 +141,9 @@
       var result, set;
       end += 1;
       set = this._get_set(key);
+      if (end < 1) {
+        end = set.length + end;
+      }
       return result = set.slice(start, end);
     };
     Lodis.prototype.lpush = function(key, item) {
@@ -300,6 +303,26 @@
           index = hash.length + index;
         }
         return hash[index] || false;
+      }
+    };
+    Lodis.prototype.linsert = function(key, direction, reference_value, value) {
+      var left_side, result, right_side, set, _ref;
+      if (this.exists(key)) {
+        direction = (function() {
+          switch (direction.toUpperCase()) {
+            case "BEFORE":
+              return -1;
+            case "AFTER":
+              return 1;
+          }
+        })();
+        set = this._get_set(key);
+        reference_value = set.indexOf(reference_value) + direction;
+        _ref = [set.slice(0, reference_value), set.slice(reference_value)], left_side = _ref[0], right_side = _ref[1];
+        result = left_side.concat([value]);
+        result = result.concat(right_side);
+        value = this._pack(result);
+        return this.set(key, value);
       }
     };
     Lodis.prototype.lpop = function(hash) {};

@@ -248,6 +248,19 @@
         assert(!l.lindex("foo", 3));
       },
 
+      "LINSERT should insert a value in a set BEFORE or AFTER another one": function(){
+        l.rpush("foo", "Hello");
+        l.rpush("foo", "Programming");
+        l.rpush("foo", "World");
+        l.linsert("foo", "BEFORE", "World", "There");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "There", "Programming", "World"]);
+
+        l.linsert("foo", "AFTER", "World", "!");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "There", "Programming", "World", "!"]);
+      },
+
     });
 
   </script>
