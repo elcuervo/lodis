@@ -1,1 +1,0 @@
-../gerbil/gerbil.js
