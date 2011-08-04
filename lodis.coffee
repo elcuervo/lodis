@@ -222,6 +222,11 @@ class @Lodis
       set = this._get_set(key)
       set.length
 
-  lpop: (hash) ->
+  lpop: (key) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      value = set[1..-1]
+      this.set key, this._pack(value)
 
-  rpop: (hash) ->
+
+  rpop: (key) ->

@@ -74,7 +74,7 @@
   * LINDEX key index &#10003;
   * LINSERT key BEFORE|AFTER pivot value &#10003;
   * LLEN key &#10003;
-  * LPOP key
+  * LPOP key &#10003;
   * LPUSH key value [value ...] &#10003;
   * LPUSHX key value
   * LRANGE key start stop

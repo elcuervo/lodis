@@ -332,8 +332,15 @@
         return set.length;
       }
     };
-    Lodis.prototype.lpop = function(hash) {};
-    Lodis.prototype.rpop = function(hash) {};
+    Lodis.prototype.lpop = function(key) {
+      var set, value;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        value = set.slice(1);
+        return this.set(key, this._pack(value));
+      }
+    };
+    Lodis.prototype.rpop = function(key) {};
     return Lodis;
   })();
 }).call(this);

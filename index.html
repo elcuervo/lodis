@@ -268,6 +268,15 @@
         assert_equal(l.llen("foo"), 2);
       },
 
+      "LPOP should extract the first item in a list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.lpop("foo");
+
+        assert_equal(l.lrange("foo", 0, -1), ["two", "three"]);
+      },
+
     });
 
   </script>
