@@ -340,6 +340,36 @@
         return this.set(key, this._pack(value));
       }
     };
+    Lodis.prototype.lpushx = function(key, value) {
+      if (this.exists(key)) {
+        return this.lpush(key, value);
+      } else {
+        return false;
+      }
+    };
+    Lodis.prototype.lrem = function(key, count, item) {
+      var quantity, result, set, value, _i, _len;
+      if (this.exists(key)) {
+        quantity = Math.abs(count);
+        set = this._get_set(key);
+        if (count < 0) {
+          set = set.reverse();
+        }
+        result = [];
+        for (_i = 0, _len = set.length; _i < _len; _i++) {
+          value = set[_i];
+          if (value === item && quantity > 0) {
+            quantity -= 1;
+          } else {
+            result.push(value);
+          }
+        }
+        if (count < 0) {
+          result = result.reverse();
+        }
+        return this.set(key, this._pack(result));
+      }
+    };
     Lodis.prototype.rpop = function(key) {};
     return Lodis;
   })();

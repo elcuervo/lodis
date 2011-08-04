@@ -228,5 +228,26 @@ class @Lodis
       value = set[1..-1]
       this.set key, this._pack(value)
 
+  lpushx: (key, value) ->
+    if this.exists(key)
+      this.lpush(key, value)
+    else
+      false
+
+  lrem: (key, count, item) ->
+    if this.exists(key)
+      quantity = Math.abs(count)
+      set = this._get_set(key)
+      set = set.reverse() if count < 0
+      result = []
+
+      for value in set
+        if value == item and quantity > 0
+          quantity -= 1
+        else
+          result.push value
+
+      result = result.reverse() if count < 0
+      this.set(key, this._pack(result))
 
   rpop: (key) ->

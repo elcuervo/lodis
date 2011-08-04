@@ -277,6 +277,25 @@
         assert_equal(l.lrange("foo", 0, -1), ["two", "three"]);
       },
 
+      "LPUSHX should insert a value to a list only if the key already exists": function(){
+        l.lpush("foo", "World");
+        l.lpushx("foo", "Hello");
+        l.lpushx("bar", "Hello");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "World"]);
+        assert_equal(l.lrange("bar", 0, -1), []);
+      },
+
+      "LREM should remove the ocurrences of a given key in a list": function(){
+        l.rpush("foo", "hello");
+        l.rpush("foo", "hello");
+        l.rpush("foo", "foo");
+        l.rpush("foo", "hello");
+        l.lrem("foo", -2, "hello");
+
+        assert_equal(l.lrange("foo", 0, -1), ["hello", "foo"]);
+      },
+
     });
 
   </script>
