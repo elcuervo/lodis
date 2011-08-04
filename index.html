@@ -296,6 +296,16 @@
         assert_equal(l.lrange("foo", 0, -1), ["hello", "foo"]);
       },
 
+      "LSET should replace a value in a index for a given list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.lset("foo", 0, "four");
+        l.lset("foo", -2, "five");
+
+        assert_equal(l.lrange("foo", 0, -1), ["four", "five", "three"]);
+      },
+
     });
 
   </script>

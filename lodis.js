@@ -144,7 +144,11 @@
       if (end < 1) {
         end = set.length + end;
       }
-      return result = set.slice(start, end);
+      result = set.slice(start, end);
+      if (result.constructor === String) {
+        result = [result];
+      }
+      return result;
     };
     Lodis.prototype.lpush = function(key, item) {
       var set;
@@ -368,6 +372,17 @@
           result = result.reverse();
         }
         return this.set(key, this._pack(result));
+      }
+    };
+    Lodis.prototype.lset = function(key, index, value) {
+      var set;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        if (index < 0) {
+          index = set.length + index;
+        }
+        set[index] = value;
+        return this.set(key, this._pack(set));
       }
     };
     Lodis.prototype.rpop = function(key) {};

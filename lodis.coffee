@@ -99,6 +99,8 @@ class @Lodis
     set = this._get_set(key)
     end = set.length + end if end < 1
     result = set.slice(start, end)
+    result = [result] if result.constructor is String
+    result
 
   lpush: (key, item) ->
     set = this._get_set(key)
@@ -249,5 +251,12 @@ class @Lodis
 
       result = result.reverse() if count < 0
       this.set(key, this._pack(result))
+
+  lset: (key, index, value) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      index = set.length + index if index < 0
+      set[index] = value
+      this.set(key, this._pack(set))
 
   rpop: (key) ->

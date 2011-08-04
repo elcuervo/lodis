@@ -81,7 +81,7 @@
   * LPUSHX key value &#10003;
   * LRANGE key start stop &#10003;
   * LREM key count value &#10003;
-  * LSET key index value
+  * LSET key index value &#10003;
   * LTRIM key start stop
   * MGET key [key ...]
   * MONITOR
