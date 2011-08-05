@@ -436,7 +436,22 @@
         l.sadd("bar", "e");
 
         assert_equal(l.sdiff("foo", "bar"), ["a", "b"]);
-      }
+      },
+
+      "SDIFFSTORE should work like SDIFF but storing the result in a given key": function(){
+        l.sadd("foo", "a");
+        l.sadd("foo", "b");
+        l.sadd("foo", "c");
+
+        l.sadd("bar", "c");
+        l.sadd("bar", "d");
+        l.sadd("bar", "e");
+
+        l.sdiffstore("baz", "foo", "bar");
+
+        assert_equal(l.smembers("baz"), ["a", "b"]);
+
+      },
 
     });
 

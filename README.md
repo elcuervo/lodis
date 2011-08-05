@@ -108,7 +108,7 @@
   * SAVE &#10003;
   * SCARD key &#10003;
   * SDIFF key [key ...] &#10003;
-  * SDIFFSTORE destination key [key ...]
+  * SDIFFSTORE destination key [key ...] &#10003;
   * SELECT index
   * SETBIT key offset value
   * SETEX key seconds value

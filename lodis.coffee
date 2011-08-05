@@ -333,3 +333,7 @@ class @Lodis
     other_set = other_set.concat(this._get_set(key)) for key in tail
     result.push value for value in set when value not in other_set
     result.reverse()
+
+  sdiffstore: (destination, keys...) ->
+    this._set_packed(destination, this.sdiff(keys...))
+

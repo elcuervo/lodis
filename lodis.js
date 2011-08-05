@@ -524,6 +524,11 @@
       }
       return result.reverse();
     };
+    Lodis.prototype.sdiffstore = function() {
+      var destination, keys;
+      destination = arguments[0], keys = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      return this._set_packed(destination, this.sdiff.apply(this, keys));
+    };
     return Lodis;
   })();
 }).call(this);
