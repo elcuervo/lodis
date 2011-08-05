@@ -461,11 +461,20 @@
       }
     };
     Lodis.prototype.rpop = function(key) {
-      var set;
+      var set, value;
       if (this.exists(key)) {
         set = this._get_set(key);
-        set.pop();
-        return this._set_packed(key, set);
+        value = set.pop();
+        this._set_packed(key, set);
+        return value;
+      }
+    };
+    Lodis.prototype.rpoplpush = function(hash_key, other_hash_key) {
+      var value;
+      if (this.exists(hash_key)) {
+        value = this.rpop(hash_key);
+        this.lpush(other_hash_key, value);
+        return value;
       }
     };
     return Lodis;

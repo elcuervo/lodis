@@ -298,9 +298,15 @@ class @Lodis
   renamenx: (key, new_key) ->
     this.rename(key, new_key) if !this.exists(new_key)
 
-
   rpop: (key) ->
     if this.exists(key)
       set = this._get_set(key)
-      set.pop()
+      value = set.pop()
       this._set_packed(key, set)
+      value
+
+  rpoplpush: (hash_key, other_hash_key) ->
+    if this.exists(hash_key)
+      value = this.rpop(hash_key)
+      this.lpush(other_hash_key, value)
+      value

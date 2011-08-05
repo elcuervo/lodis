@@ -100,7 +100,7 @@
   * RENAME key newkey &#10003;
   * RENAMENX key newkey &#10003;
   * RPOP key &#10003;
-  * RPOPLPUSH source destination
+  * RPOPLPUSH source destination &#10003;
   * RPUSH key value [value ...] &#10003;
   * RPUSHX key value
   * SADD key member [member ...]

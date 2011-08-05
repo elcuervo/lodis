@@ -383,6 +383,17 @@
         assert_equal(l.lrange("foo", 0, -1), ["one", "two"]);
       },
 
+      "RPOPLPUSH should extract the last key of a list and push it to the first of another list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.rpush("bar", "four");
+
+        assert_equal(l.rpoplpush("foo", "bar"), "three");
+        assert_equal(l.lrange("foo", 0, -1), ["one", "two"]);
+        assert_equal(l.lrange("bar", 0, -1), ["three", "four"]);
+      },
+
     });
 
   </script>
