@@ -124,7 +124,7 @@
   * SMOVE source destination member &#10003;
   * SORT key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]
   * SPOP key &#10003;
-  * SRANDMEMBER key
+  * SRANDMEMBER key &#10003;
   * SREM key member [member ...]
   * STRLEN key
   * SUBSCRIBE channel [channel ...]

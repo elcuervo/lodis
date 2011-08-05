@@ -621,6 +621,13 @@
         return this._set_packed(key, set);
       }
     };
+    Lodis.prototype.srandmember = function(key) {
+      var set;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        return set[Math.floor(Math.random() * set.length)];
+      }
+    };
     return Lodis;
   })();
 }).call(this);

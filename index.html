@@ -537,7 +537,15 @@
         l.spop("foo");
 
         assert_equal(l.smembers("foo"), ["three", "two"]);
-      }
+      },
+
+      "SRANDMEMBER should return a random member of a set": function(){
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("foo", "three");
+
+        assert(["one", "two", "three"].indexOf(l.srandmember("foo")) > -1)
+      },
 
     });
 

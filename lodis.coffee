@@ -395,3 +395,8 @@ class @Lodis
       set.pop()
       this._set_packed(key, set)
 
+  srandmember: (key) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      set[Math.floor(Math.random() * set.length)]
+
