@@ -580,6 +580,11 @@
       keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       return this._get_difference_or_intersection_for_sets.apply(this, ['INTER'].concat(__slice.call(keys)));
     };
+    Lodis.prototype.sinterstore = function() {
+      var destination, keys;
+      destination = arguments[0], keys = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      return this._set_packed(destination, this.sinter.apply(this, keys));
+    };
     return Lodis;
   })();
 }).call(this);

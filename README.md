@@ -116,7 +116,7 @@
   * SETRANGE key offset value &#10003;
   * SHUTDOWN &#10003;
   * SINTER key [key ...] &#10003;
-  * SINTERSTORE destination key [key ...]
+  * SINTERSTORE destination key [key ...] &#10003;
   * SISMEMBER key member
   * SLAVEOF host port
   * SLOWLOG subcommand [argument]

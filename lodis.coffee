@@ -369,3 +369,5 @@ class @Lodis
   sinter: (keys...) ->
     this._get_difference_or_intersection_for_sets('INTER', keys...)
 
+  sinterstore: (destination, keys...) ->
+    this._set_packed(destination, this.sinter(keys...))
