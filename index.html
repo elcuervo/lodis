@@ -471,6 +471,17 @@
         assert_equal(l.get("foo"), "Hello");
       },
 
+      "SETRANGE should set a value for a key setting ": function(){
+        l.set("foo", "Hello World");
+        l.setrange("foo", 6, "Redis");
+
+        assert_equal(l.get("foo"), "Hello Redis");
+
+        l.setrange("bar", 6, "Redis");
+
+        assert_equal(l.get("bar"), "      Redis");
+      },
+
     });
 
   </script>

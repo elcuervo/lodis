@@ -113,7 +113,7 @@
   * SETBIT key offset value
   * SETEX key seconds value &#10003;
   * SETNX key value &#10003;
-  * SETRANGE key offset value
+  * SETRANGE key offset value &#10003;
   * SHUTDOWN
   * SINTER key [key ...]
   * SINTERSTORE destination key [key ...]

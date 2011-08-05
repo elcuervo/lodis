@@ -541,6 +541,21 @@
         return this.set(key, value);
       }
     };
+    Lodis.prototype.setrange = function(key, offset, value) {
+      var i, old_value, result;
+      old_value = (function() {
+        if (this.exists(key)) {
+          return this.get(key).substr(0, offset);
+        } else {
+          result = new String;
+          for (i = 0; 0 <= offset ? i < offset : i > offset; 0 <= offset ? i++ : i--) {
+            result += " ";
+          }
+          return result;
+        }
+      }).call(this);
+      return this.set(key, "" + old_value + value);
+    };
     return Lodis;
   })();
 }).call(this);

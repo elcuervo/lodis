@@ -345,3 +345,12 @@ class @Lodis
 
   setnx: (key, value) -> this.set(key, value) if !this.exists(key)
 
+  setrange: (key, offset, value) ->
+    old_value = if this.exists(key)
+      this.get(key).substr(0, offset)
+    else
+      result = new String
+      result += " " for i in [0...offset]
+      result
+
+    this.set(key, "#{old_value}#{value}")
