@@ -337,3 +337,5 @@ class @Lodis
   sdiffstore: (destination, keys...) ->
     this._set_packed(destination, this.sdiff(keys...))
 
+  select: (db) -> db is 0
+

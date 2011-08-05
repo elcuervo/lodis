@@ -529,6 +529,9 @@
       destination = arguments[0], keys = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       return this._set_packed(destination, this.sdiff.apply(this, keys));
     };
+    Lodis.prototype.select = function(db) {
+      return db === 0;
+    };
     return Lodis;
   })();
 }).call(this);
