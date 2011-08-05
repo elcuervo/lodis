@@ -558,6 +558,22 @@
         assert(l.smembers("foo"), ["three", "two"]);
       },
 
+      "STRLEN should return the length of a given key": function(){
+        l.set("foo", "Hello World");
+
+        assert_equal(l.strlen("foo"), 11);
+      },
+
+      "TYPE should return the js type of a key": function(){
+        l.set("foo", "value");
+        l.lpush("bar", "value");
+        l.sadd("baz", "value");
+
+        assert_equal(l.type("foo"), "string");
+        assert_equal(l.type("bar"), "array");
+        assert_equal(l.type("baz"), "array");
+      },
+
     });
 
   </script>

@@ -23,6 +23,11 @@ class @Lodis
         result.push item for item in this._get_set(source) when item != member
     result
 
+  _get_unpacked: (key) ->
+    try
+      this._unpack(this.get(key))
+    catch error
+      this.get(key)
 
   _get_hash: (key) ->
     this._get_set_or_default(key, {})
@@ -412,4 +417,13 @@ class @Lodis
       set = this._get_set(key)
       result = this._extract_from_set(key, members...)
       this._set_packed(key, result)
+
+  strlen: (key) ->
+    if this.exists(key)
+      this.get(key).length
+    else
+      0
+
+  type: (key) ->
+    this._get_unpacked(key).constructor.name.toLowerCase() if this.exists(key)
 

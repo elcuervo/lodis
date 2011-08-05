@@ -43,6 +43,13 @@
       }
       return result;
     };
+    Lodis.prototype._get_unpacked = function(key) {
+      try {
+        return this._unpack(this.get(key));
+      } catch (error) {
+        return this.get(key);
+      }
+    };
     Lodis.prototype._get_hash = function(key) {
       return this._get_set_or_default(key, {});
     };
@@ -646,6 +653,18 @@
         set = this._get_set(key);
         result = this._extract_from_set.apply(this, [key].concat(__slice.call(members)));
         return this._set_packed(key, result);
+      }
+    };
+    Lodis.prototype.strlen = function(key) {
+      if (this.exists(key)) {
+        return this.get(key).length;
+      } else {
+        return 0;
+      }
+    };
+    Lodis.prototype.type = function(key) {
+      if (this.exists(key)) {
+        return this._get_unpacked(key).constructor.name.toLowerCase();
       }
     };
     return Lodis;

@@ -126,12 +126,12 @@
   * SPOP key &#10003;
   * SRANDMEMBER key &#10003;
   * SREM key member [member ...] &#10003;
-  * STRLEN key
+  * STRLEN key &#10003;
   * SUBSCRIBE channel [channel ...]
   * SUNION key [key ...]
   * SUNIONSTORE destination key [key ...]
   * SYNC
-  * TYPE key
+  * TYPE key &#10003;
   * UNSUBSCRIBE [channel [channel ...]]
   * UNWATCH
   * WATCH key [key ...]
@@ -155,4 +155,5 @@
 
 ## TODO
   * Store expirations within Lodis itself to avoid expiration dates on reload
+  * Should handle types in a different way? custom types to match Redis?
   * Sync with Redis via HTTP?
