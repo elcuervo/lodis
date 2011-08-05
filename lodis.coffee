@@ -23,6 +23,20 @@ class @Lodis
     value = this._pack(value)
     this.set(key, value)
 
+  _get_difference_or_intersection_for_sets: (action = 'DIFF', keys...) ->
+    [head, tail...] = keys
+    set = this._get_set(head)
+    other_set = result = []
+    other_set = other_set.concat(this._get_set(key)) for key in tail
+
+    for value in set
+      condition = switch action.toUpperCase()
+        when 'DIFF'  then value not in other_set
+        when 'INTER' then value in other_set
+      result.push value if condition
+
+    result.reverse()
+
   _get_from_hash: (key, options = with_keys: true, with_values: true, only: []) ->
     hash = this._get_hash(key)
     result = []
@@ -327,12 +341,7 @@ class @Lodis
     this._get_set(key).length
 
   sdiff: (keys...) ->
-    [head, tail...] = keys
-    set = this._get_set(head)
-    other_set = result = []
-    other_set = other_set.concat(this._get_set(key)) for key in tail
-    result.push value for value in set when value not in other_set
-    result.reverse()
+    this._get_difference_or_intersection_for_sets('DIFF', keys...)
 
   sdiffstore: (destination, keys...) ->
     this._set_packed(destination, this.sdiff(keys...))
@@ -356,3 +365,7 @@ class @Lodis
     this.set(key, "#{old_value}#{value}")
 
   shutdown: -> true # ?
+
+  sinter: (keys...) ->
+    this._get_difference_or_intersection_for_sets('INTER', keys...)
+

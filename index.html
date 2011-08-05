@@ -482,8 +482,20 @@
         assert_equal(l.get("bar"), "      Redis");
       },
 
-      "SHUTDOWN should stop the databse": function(){
+      "SHUTDOWN should stop the database": function(){
         assert(l.shutdown());
+      },
+
+      "SINTER should return the intersection of to sets": function(){
+        l.sadd("foo", "a");
+        l.sadd("foo", "b");
+        l.sadd("foo", "c");
+
+        l.sadd("bar", "c");
+        l.sadd("bar", "d");
+        l.sadd("bar", "e");
+
+        assert_equal(l.sinter("foo", "bar"), ["c"]);
       },
 
     });

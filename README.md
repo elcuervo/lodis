@@ -115,7 +115,7 @@
   * SETNX key value &#10003;
   * SETRANGE key offset value &#10003;
   * SHUTDOWN &#10003;
-  * SINTER key [key ...]
+  * SINTER key [key ...] &#10003;
   * SINTERSTORE destination key [key ...]
   * SISMEMBER key member
   * SLAVEOF host port

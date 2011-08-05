@@ -1,10 +1,10 @@
 (function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __indexOf = Array.prototype.indexOf || function(item) {
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice, __indexOf = Array.prototype.indexOf || function(item) {
     for (var i = 0, l = this.length; i < l; i++) {
       if (this[i] === item) return i;
     }
     return -1;
-  }, __slice = Array.prototype.slice;
+  };
   this.Lodis = (function() {
     function Lodis() {
       this._expire_key = __bind(this._expire_key, this);      this.storage = window.localStorage;
@@ -31,6 +31,35 @@
     Lodis.prototype._set_packed = function(key, value) {
       value = this._pack(value);
       return this.set(key, value);
+    };
+    Lodis.prototype._get_difference_or_intersection_for_sets = function() {
+      var action, condition, head, key, keys, other_set, result, set, tail, value, _i, _j, _len, _len2;
+      action = arguments[0], keys = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (action == null) {
+        action = 'DIFF';
+      }
+      head = keys[0], tail = 2 <= keys.length ? __slice.call(keys, 1) : [];
+      set = this._get_set(head);
+      other_set = result = [];
+      for (_i = 0, _len = tail.length; _i < _len; _i++) {
+        key = tail[_i];
+        other_set = other_set.concat(this._get_set(key));
+      }
+      for (_j = 0, _len2 = set.length; _j < _len2; _j++) {
+        value = set[_j];
+        condition = (function() {
+          switch (action.toUpperCase()) {
+            case 'DIFF':
+              return __indexOf.call(other_set, value) < 0;
+            case 'INTER':
+              return __indexOf.call(other_set, value) >= 0;
+          }
+        })();
+        if (condition) {
+          result.push(value);
+        }
+      }
+      return result.reverse();
     };
     Lodis.prototype._get_from_hash = function(key, options) {
       var hash, result, value;
@@ -507,22 +536,9 @@
       return this._get_set(key).length;
     };
     Lodis.prototype.sdiff = function() {
-      var head, key, keys, other_set, result, set, tail, value, _i, _j, _len, _len2;
+      var keys;
       keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-      head = keys[0], tail = 2 <= keys.length ? __slice.call(keys, 1) : [];
-      set = this._get_set(head);
-      other_set = result = [];
-      for (_i = 0, _len = tail.length; _i < _len; _i++) {
-        key = tail[_i];
-        other_set = other_set.concat(this._get_set(key));
-      }
-      for (_j = 0, _len2 = set.length; _j < _len2; _j++) {
-        value = set[_j];
-        if (__indexOf.call(other_set, value) < 0) {
-          result.push(value);
-        }
-      }
-      return result.reverse();
+      return this._get_difference_or_intersection_for_sets.apply(this, ['DIFF'].concat(__slice.call(keys)));
     };
     Lodis.prototype.sdiffstore = function() {
       var destination, keys;
@@ -558,6 +574,11 @@
     };
     Lodis.prototype.shutdown = function() {
       return true;
+    };
+    Lodis.prototype.sinter = function() {
+      var keys;
+      keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      return this._get_difference_or_intersection_for_sets.apply(this, ['INTER'].concat(__slice.call(keys)));
     };
     return Lodis;
   })();
