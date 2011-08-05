@@ -284,4 +284,7 @@ class @Lodis
         clearTimeout this._expiration_hash[key].id
         delete this._expiration_hash[key]
 
+  ping: ->
+    "PONG"
+
   rpop: (key) ->

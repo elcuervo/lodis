@@ -441,6 +441,9 @@
         }
       }
     };
+    Lodis.prototype.ping = function() {
+      return "PONG";
+    };
     Lodis.prototype.rpop = function(key) {};
     return Lodis;
   })();

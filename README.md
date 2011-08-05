@@ -91,7 +91,7 @@
   * MULTI
   * OBJECT subcommand [arguments [arguments ...]]
   * PERSIST key &#10003;
-  * PING
+  * PING &#10003;
   * PSUBSCRIBE pattern [pattern ...]
   * PUBLISH channel message
   * PUNSUBSCRIBE [pattern [pattern ...]]

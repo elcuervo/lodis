@@ -347,6 +347,10 @@
         assert_equal(l.ttl("foo"), -1);
       },
 
+      "PING should return PONG": function(){
+        assert_equal(l.ping(), "PONG");
+      },
+
 
     });
 
