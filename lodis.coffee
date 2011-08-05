@@ -339,3 +339,7 @@ class @Lodis
 
   select: (db) -> db is 0
 
+  setex: (key, expire, value) ->
+    this.set(key, value)
+    this.expire(key, expire)
+

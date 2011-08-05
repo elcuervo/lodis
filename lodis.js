@@ -532,6 +532,10 @@
     Lodis.prototype.select = function(db) {
       return db === 0;
     };
+    Lodis.prototype.setex = function(key, expire, value) {
+      this.set(key, value);
+      return this.expire(key, expire);
+    };
     return Lodis;
   })();
 }).call(this);

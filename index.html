@@ -452,9 +452,16 @@
         assert_equal(l.smembers("baz"), ["a", "b"]);
       },
 
-      "SELECT should select a db, Lodis only supports one ": function(){
+      "SELECT should select a db, Lodis only supports one": function(){
         assert(!l.select(2));
         assert(l.select(0));
+      },
+
+      "SETEX should set a key and an expire value": function(){
+        l.setex("foo", 10, "Hello");
+
+        assert(l.ttl("foo") <= 10)
+        assert_equal(l.get("foo"), "Hello")
       },
 
     });

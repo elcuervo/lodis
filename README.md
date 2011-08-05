@@ -111,7 +111,7 @@
   * SDIFFSTORE destination key [key ...] &#10003;
   * SELECT index &#10003;
   * SETBIT key offset value
-  * SETEX key seconds value
+  * SETEX key seconds value &#10003;
   * SETNX key value
   * SETRANGE key offset value
   * SHUTDOWN
