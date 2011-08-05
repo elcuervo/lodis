@@ -536,6 +536,11 @@
       this.set(key, value);
       return this.expire(key, expire);
     };
+    Lodis.prototype.setnx = function(key, value) {
+      if (!this.exists(key)) {
+        return this.set(key, value);
+      }
+    };
     return Lodis;
   })();
 }).call(this);

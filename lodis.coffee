@@ -343,3 +343,5 @@ class @Lodis
     this.set(key, value)
     this.expire(key, expire)
 
+  setnx: (key, value) -> this.set(key, value) if !this.exists(key)
+

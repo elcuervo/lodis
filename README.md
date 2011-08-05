@@ -112,7 +112,7 @@
   * SELECT index &#10003;
   * SETBIT key offset value
   * SETEX key seconds value &#10003;
-  * SETNX key value
+  * SETNX key value &#10003;
   * SETRANGE key offset value
   * SHUTDOWN
   * SINTER key [key ...]

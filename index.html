@@ -464,6 +464,13 @@
         assert_equal(l.get("foo"), "Hello")
       },
 
+      "SETNX should set a key only if the key does not exists": function(){
+        l.setnx("foo", "Hello");
+        l.setnx("foo", "World");
+
+        assert_equal(l.get("foo"), "Hello");
+      },
+
     });
 
   </script>
