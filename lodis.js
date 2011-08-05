@@ -455,7 +455,19 @@
       this.del(key);
       return this.set(new_key, value);
     };
-    Lodis.prototype.rpop = function(key) {};
+    Lodis.prototype.renamenx = function(key, new_key) {
+      if (!this.exists(new_key)) {
+        return this.rename(key, new_key);
+      }
+    };
+    Lodis.prototype.rpop = function(key) {
+      var set;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        set.pop();
+        return this._set_packed(key, set);
+      }
+    };
     return Lodis;
   })();
 }).call(this);

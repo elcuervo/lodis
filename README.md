@@ -98,8 +98,8 @@
   * QUIT
   * RANDOMKEY &#10003;
   * RENAME key newkey &#10003;
-  * RENAMENX key newkey
-  * RPOP key
+  * RENAMENX key newkey &#10003;
+  * RPOP key &#10003;
   * RPOPLPUSH source destination
   * RPUSH key value [value ...] &#10003;
   * RPUSHX key value

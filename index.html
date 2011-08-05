@@ -356,7 +356,7 @@
         l.set("bar", 2);
         l.set("baz", 3);
 
-        assert((["foo", "bar", "baz"]).join().indexOf(l.randomkey()) != 0);
+        assert(l.exists(l.randomkey()));
       },
 
       "RENAME should rename a key": function(){
@@ -366,6 +366,22 @@
         assert_equal(l.get("bar"), "Hello")
       },
 
+      "RENAMENX should rename a key only if the new key value does not exists": function(){
+        l.set("foo", "Hello");
+        l.set("bar", "World");
+        l.renamenx("foo", "bar");
+
+        assert_equal(l.get("bar"), "World");
+      },
+
+      "RPOP extract the last item from a list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.rpop("foo");
+
+        assert_equal(l.lrange("foo", 0, -1), ["one", "two"]);
+      },
 
     });
 

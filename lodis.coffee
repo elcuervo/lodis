@@ -295,5 +295,12 @@ class @Lodis
     this.del(key)
     this.set(new_key, value)
 
+  renamenx: (key, new_key) ->
+    this.rename(key, new_key) if !this.exists(new_key)
+
 
   rpop: (key) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      set.pop()
+      this._set_packed(key, set)
