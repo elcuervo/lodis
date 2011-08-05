@@ -503,6 +503,9 @@
     Lodis.prototype.save = function() {
       return true;
     };
+    Lodis.prototype.scard = function(key) {
+      return this._get_set(key).length;
+    };
     return Lodis;
   })();
 }).call(this);

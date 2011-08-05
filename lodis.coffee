@@ -322,3 +322,6 @@ class @Lodis
     this._get_set(key) if this.exists(key)
 
   save: -> true # ?
+
+  scard: (key) ->
+    this._get_set(key).length

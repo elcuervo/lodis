@@ -106,7 +106,7 @@
   * RPUSHX key value &#10003;
   * SADD key member [member ...] &#10003;
   * SAVE &#10003;
-  * SCARD key
+  * SCARD key &#10003;
   * SDIFF key [key ...]
   * SDIFFSTORE destination key [key ...]
   * SELECT index

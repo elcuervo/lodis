@@ -419,6 +419,13 @@
         assert_equal(l.smembers("foo"), ["World", "Hello"]);
       },
 
+      "SCARD shuld return the cardinality of a given set": function(){
+        l.sadd("foo", "Hello");
+        l.sadd("foo", "World");
+
+        assert_equal(l.scard("foo"), 2);
+      },
+
     });
 
   </script>
