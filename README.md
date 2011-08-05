@@ -114,7 +114,7 @@
   * SETEX key seconds value &#10003;
   * SETNX key value &#10003;
   * SETRANGE key offset value &#10003;
-  * SHUTDOWN
+  * SHUTDOWN &#10003;
   * SINTER key [key ...]
   * SINTERSTORE destination key [key ...]
   * SISMEMBER key member

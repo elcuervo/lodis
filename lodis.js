@@ -556,6 +556,9 @@
       }).call(this);
       return this.set(key, "" + old_value + value);
     };
+    Lodis.prototype.shutdown = function() {
+      return true;
+    };
     return Lodis;
   })();
 }).call(this);

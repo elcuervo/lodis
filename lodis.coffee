@@ -354,3 +354,5 @@ class @Lodis
       result
 
     this.set(key, "#{old_value}#{value}")
+
+  shutdown: -> true # ?
