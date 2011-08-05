@@ -388,3 +388,10 @@ class @Lodis
         true
       else
         false
+
+  spop: (key) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      set.pop()
+      this._set_packed(key, set)
+

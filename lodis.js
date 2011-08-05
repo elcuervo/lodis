@@ -613,6 +613,14 @@
         }
       }
     };
+    Lodis.prototype.spop = function(key) {
+      var set;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        set.pop();
+        return this._set_packed(key, set);
+      }
+    };
     return Lodis;
   })();
 }).call(this);

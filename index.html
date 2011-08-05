@@ -527,6 +527,16 @@
 
         assert_equal(l.smembers("foo"), ["one"]);
         assert_equal(l.smembers("bar"), ["three", "two"]);
+      },
+
+      "SPOP should extract the last member of a set": function(){
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("foo", "three");
+
+        l.spop("foo");
+
+        assert_equal(l.smembers("foo"), ["three", "two"]);
       }
 
     });
