@@ -506,6 +506,24 @@
     Lodis.prototype.scard = function(key) {
       return this._get_set(key).length;
     };
+    Lodis.prototype.sdiff = function() {
+      var head, key, keys, other_set, result, set, tail, value, _i, _j, _len, _len2;
+      keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      head = keys[0], tail = 2 <= keys.length ? __slice.call(keys, 1) : [];
+      set = this._get_set(head);
+      other_set = result = [];
+      for (_i = 0, _len = tail.length; _i < _len; _i++) {
+        key = tail[_i];
+        other_set = other_set.concat(this._get_set(key));
+      }
+      for (_j = 0, _len2 = set.length; _j < _len2; _j++) {
+        value = set[_j];
+        if (__indexOf.call(other_set, value) < 0) {
+          result.push(value);
+        }
+      }
+      return result.reverse();
+    };
     return Lodis;
   })();
 }).call(this);

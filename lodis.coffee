@@ -325,3 +325,11 @@ class @Lodis
 
   scard: (key) ->
     this._get_set(key).length
+
+  sdiff: (keys...) ->
+    [head, tail...] = keys
+    set = this._get_set(head)
+    other_set = result = []
+    other_set = other_set.concat(this._get_set(key)) for key in tail
+    result.push value for value in set when value not in other_set
+    result.reverse()

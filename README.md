@@ -107,7 +107,7 @@
   * SADD key member [member ...] &#10003;
   * SAVE &#10003;
   * SCARD key &#10003;
-  * SDIFF key [key ...]
+  * SDIFF key [key ...] &#10003;
   * SDIFFSTORE destination key [key ...]
   * SELECT index
   * SETBIT key offset value
