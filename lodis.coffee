@@ -290,4 +290,10 @@ class @Lodis
     keys = this.keys()
     keys[Math.floor(Math.random() * keys.length)]
 
+  rename: (key, new_key) ->
+    value = this.get(key)
+    this.del(key)
+    this.set(new_key, value)
+
+
   rpop: (key) ->

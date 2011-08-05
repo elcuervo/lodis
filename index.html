@@ -357,7 +357,13 @@
         l.set("baz", 3);
 
         assert((["foo", "bar", "baz"]).join().indexOf(l.randomkey()) != 0);
+      },
 
+      "RENAME should rename a key": function(){
+        l.set("foo", "Hello");
+        l.rename("foo", "bar");
+
+        assert_equal(l.get("bar"), "Hello")
       },
 
 

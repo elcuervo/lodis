@@ -97,7 +97,7 @@
   * PUNSUBSCRIBE [pattern [pattern ...]]
   * QUIT
   * RANDOMKEY &#10003;
-  * RENAME key newkey
+  * RENAME key newkey &#10003;
   * RENAMENX key newkey
   * RPOP key
   * RPOPLPUSH source destination

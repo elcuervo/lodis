@@ -449,6 +449,12 @@
       keys = this.keys();
       return keys[Math.floor(Math.random() * keys.length)];
     };
+    Lodis.prototype.rename = function(key, new_key) {
+      var value;
+      value = this.get(key);
+      this.del(key);
+      return this.set(new_key, value);
+    };
     Lodis.prototype.rpop = function(key) {};
     return Lodis;
   })();
