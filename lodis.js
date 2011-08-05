@@ -500,6 +500,9 @@
         return this._get_set(key);
       }
     };
+    Lodis.prototype.save = function() {
+      return true;
+    };
     return Lodis;
   })();
 }).call(this);

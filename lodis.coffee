@@ -320,3 +320,5 @@ class @Lodis
 
   smembers: (key) ->
     this._get_set(key) if this.exists(key)
+
+  save: -> true # ?

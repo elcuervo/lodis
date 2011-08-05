@@ -105,7 +105,7 @@
   * RPUSH key value [value ...] &#10003;
   * RPUSHX key value &#10003;
   * SADD key member [member ...] &#10003;
-  * SAVE
+  * SAVE &#10003;
   * SCARD key
   * SDIFF key [key ...]
   * SDIFFSTORE destination key [key ...]
