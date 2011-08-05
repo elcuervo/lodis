@@ -1,7 +1,6 @@
 class @Lodis
-
   constructor: ->
-    this.storage = window.localStorage
+    this.storage  = window.localStorage
 
   _pack:   (value) -> JSON.stringify value
 
@@ -69,8 +68,8 @@ class @Lodis
 
   expire: (key, seconds) ->
     miliseconds = seconds*1000
-    this._expiration_hash[key] = new Date().getTime() + miliseconds
-    setTimeout this._expire_key, miliseconds, key
+    timeout_id = setTimeout this._expire_key, miliseconds, key
+    this._expiration_hash[key] = id: timeout_id, timeout: new Date().getTime() + miliseconds
     true
 
   expireat: (key, miliseconds) ->
@@ -82,7 +81,7 @@ class @Lodis
   ttl: (key) ->
     if this.exists(key)
       if this._expiration_hash[key]
-        Math.floor((this._expiration_hash[key] - new Date().getTime()) / 1000)
+        Math.floor((this._expiration_hash[key].timeout - new Date().getTime()) / 1000)
       else
         -1
 
@@ -279,6 +278,10 @@ class @Lodis
     return for i, key_or_value of keys_and_values when (!(i % 2) and this.exists(key_or_value))
     this.mset(keys_and_values...)
 
-
+  persist: (key) ->
+    if this.exists(key)
+      if this._expiration_hash[key]
+        clearTimeout this._expiration_hash[key].id
+        delete this._expiration_hash[key]
 
   rpop: (key) ->

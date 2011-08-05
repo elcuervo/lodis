@@ -102,10 +102,13 @@
       return found_keys;
     };
     Lodis.prototype.expire = function(key, seconds) {
-      var miliseconds;
+      var miliseconds, timeout_id;
       miliseconds = seconds * 1000;
-      this._expiration_hash[key] = new Date().getTime() + miliseconds;
-      setTimeout(this._expire_key, miliseconds, key);
+      timeout_id = setTimeout(this._expire_key, miliseconds, key);
+      this._expiration_hash[key] = {
+        id: timeout_id,
+        timeout: new Date().getTime() + miliseconds
+      };
       return true;
     };
     Lodis.prototype.expireat = function(key, miliseconds) {
@@ -120,7 +123,7 @@
     Lodis.prototype.ttl = function(key) {
       if (this.exists(key)) {
         if (this._expiration_hash[key]) {
-          return Math.floor((this._expiration_hash[key] - new Date().getTime()) / 1000);
+          return Math.floor((this._expiration_hash[key].timeout - new Date().getTime()) / 1000);
         } else {
           return -1;
         }
@@ -429,6 +432,14 @@
         }
       }
       return this.mset.apply(this, keys_and_values);
+    };
+    Lodis.prototype.persist = function(key) {
+      if (this.exists(key)) {
+        if (this._expiration_hash[key]) {
+          clearTimeout(this._expiration_hash[key].id);
+          return delete this._expiration_hash[key];
+        }
+      }
     };
     Lodis.prototype.rpop = function(key) {};
     return Lodis;

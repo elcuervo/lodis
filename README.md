@@ -90,7 +90,7 @@
   * MSETNX key value [key value ...] &#10003;
   * MULTI
   * OBJECT subcommand [arguments [arguments ...]]
-  * PERSIST key
+  * PERSIST key &#10003;
   * PING
   * PSUBSCRIBE pattern [pattern ...]
   * PUBLISH channel message

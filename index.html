@@ -336,6 +336,17 @@
         assert_equal(l.mget("foo", "bar", "baz"), ["Hello", "there", null]);
       },
 
+      "PERSIST should remove the expiration after a key was setted with EXPIRE": function(){
+        l.set("foo", "Hello");
+        l.expire("foo", 10);
+
+        assert(l.ttl("foo") <= 10);
+
+        l.persist("foo");
+
+        assert_equal(l.ttl("foo"), -1);
+      },
+
 
     });
 
