@@ -403,6 +403,22 @@
         assert_equal(l.lrange("bar", 0, -1), []);
       },
 
+      "SADD adds a member to a list no duplicate": function(){
+        l.sadd("foo", "Hello");
+        l.sadd("foo", "World");
+        l.sadd("foo", "World");
+
+        assert_equal(l.smembers("foo"), ["World", "Hello"]);
+      },
+
+      "SMEMBERS should list the members of a list": function(){
+        l.sadd("foo", "Hello");
+        l.sadd("foo", "World");
+        l.sadd("foo", "World");
+
+        assert_equal(l.smembers("foo"), ["World", "Hello"]);
+      },
+
     });
 
   </script>

@@ -482,6 +482,24 @@
         return value;
       }
     };
+    Lodis.prototype.sadd = function() {
+      var key, member, members, set, _i, _len, _results;
+      key = arguments[0], members = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      set = this._get_set(key);
+      _results = [];
+      for (_i = 0, _len = members.length; _i < _len; _i++) {
+        member = members[_i];
+        if (__indexOf.call(set, member) < 0) {
+          _results.push(this.lpush(key, member));
+        }
+      }
+      return _results;
+    };
+    Lodis.prototype.smembers = function(key) {
+      if (this.exists(key)) {
+        return this._get_set(key);
+      }
+    };
     return Lodis;
   })();
 }).call(this);

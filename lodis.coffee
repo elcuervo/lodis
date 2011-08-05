@@ -313,3 +313,10 @@ class @Lodis
       value = this.rpop(hash_key)
       this.lpush(other_hash_key, value)
       value
+
+  sadd: (key, members...) ->
+    set = this._get_set(key)
+    this.lpush(key, member) for member in members when member not in set
+
+  smembers: (key) ->
+    this._get_set(key) if this.exists(key)

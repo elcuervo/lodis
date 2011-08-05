@@ -24,7 +24,8 @@
     |---------------------------------------------------------------------|
     -----------------------------------------------------------------------
 
-
+## Compatibility
+  Redis 2.4
 
 ## Supported commands
   * SET &#10003;
@@ -103,7 +104,7 @@
   * RPOPLPUSH source destination &#10003;
   * RPUSH key value [value ...] &#10003;
   * RPUSHX key value &#10003;
-  * SADD key member [member ...]
+  * SADD key member [member ...] &#10003;
   * SAVE
   * SCARD key
   * SDIFF key [key ...]
@@ -119,7 +120,7 @@
   * SISMEMBER key member
   * SLAVEOF host port
   * SLOWLOG subcommand [argument]
-  * SMEMBERS key
+  * SMEMBERS key &#10003;
   * SMOVE source destination member
   * SORT key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]
   * SPOP key
