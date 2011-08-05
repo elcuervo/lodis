@@ -96,7 +96,7 @@
   * PUBLISH channel message
   * PUNSUBSCRIBE [pattern [pattern ...]]
   * QUIT
-  * RANDOMKEY
+  * RANDOMKEY &#10003;
   * RENAME key newkey
   * RENAMENX key newkey
   * RPOP key

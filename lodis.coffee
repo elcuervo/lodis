@@ -284,7 +284,10 @@ class @Lodis
         clearTimeout this._expiration_hash[key].id
         delete this._expiration_hash[key]
 
-  ping: ->
-    "PONG"
+  ping: -> "PONG"
+
+  randomkey: ->
+    keys = this.keys()
+    keys[Math.floor(Math.random() * keys.length)]
 
   rpop: (key) ->

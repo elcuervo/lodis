@@ -444,6 +444,11 @@
     Lodis.prototype.ping = function() {
       return "PONG";
     };
+    Lodis.prototype.randomkey = function() {
+      var keys;
+      keys = this.keys();
+      return keys[Math.floor(Math.random() * keys.length)];
+    };
     Lodis.prototype.rpop = function(key) {};
     return Lodis;
   })();

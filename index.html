@@ -351,6 +351,15 @@
         assert_equal(l.ping(), "PONG");
       },
 
+      "RANDOMKEY should return a random key": function(){
+        l.set("foo", 1);
+        l.set("bar", 2);
+        l.set("baz", 3);
+
+        assert((["foo", "bar", "baz"]).join().indexOf(l.randomkey()) != 0);
+
+      },
+
 
     });
 
