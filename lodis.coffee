@@ -371,3 +371,9 @@ class @Lodis
 
   sinterstore: (destination, keys...) ->
     this._set_packed(destination, this.sinter(keys...))
+
+  sismember: (key, value) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      set.indexOf(value) > -1
+

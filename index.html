@@ -512,6 +512,13 @@
         assert_equal(l.smembers("baz"), ["c"]);
       },
 
+      "SISMEMBER should check if a value is member of a set": function(){
+        l.sadd("foo", "one");
+
+        assert(l.sismember("foo", "one"));
+        assert(!l.sismember("foo", "two"));
+      }
+
     });
 
   </script>

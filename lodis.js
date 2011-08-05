@@ -585,6 +585,13 @@
       destination = arguments[0], keys = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
       return this._set_packed(destination, this.sinter.apply(this, keys));
     };
+    Lodis.prototype.sismember = function(key, value) {
+      var set;
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        return set.indexOf(value) > -1;
+      }
+    };
     return Lodis;
   })();
 }).call(this);

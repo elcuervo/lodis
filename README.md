@@ -117,7 +117,7 @@
   * SHUTDOWN &#10003;
   * SINTER key [key ...] &#10003;
   * SINTERSTORE destination key [key ...] &#10003;
-  * SISMEMBER key member
+  * SISMEMBER key member &#10003;
   * SLAVEOF host port
   * SLOWLOG subcommand [argument]
   * SMEMBERS key &#10003;
