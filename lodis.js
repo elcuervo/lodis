@@ -379,7 +379,8 @@
       if (this.exists(key)) {
         set = this._get_set(key);
         value = set.slice(1);
-        return this._set_packed(key, value);
+        this._set_packed(key, value);
+        return value;
       }
     };
     Lodis.prototype.lpushx = function(key, value) {
@@ -590,6 +591,26 @@
       if (this.exists(key)) {
         set = this._get_set(key);
         return set.indexOf(value) > -1;
+      }
+    };
+    Lodis.prototype.smove = function(source, destination, member) {
+      var item, result, _i, _len, _ref;
+      if (this.exists(source)) {
+        if (__indexOf.call(this.smembers(source), member) >= 0) {
+          result = [];
+          _ref = this._get_set(source);
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            item = _ref[_i];
+            if (item !== member) {
+              result.push(item);
+            }
+          }
+          this._set_packed(source, result);
+          this.rpush(destination, member);
+          return true;
+        } else {
+          return false;
+        }
       }
     };
     return Lodis;

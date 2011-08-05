@@ -246,6 +246,7 @@ class @Lodis
       set = this._get_set(key)
       value = set[1..-1]
       this._set_packed(key, value)
+      value
 
   lpushx: (key, value) ->
     if this.exists(key)
@@ -377,3 +378,13 @@ class @Lodis
       set = this._get_set(key)
       set.indexOf(value) > -1
 
+  smove: (source, destination, member) ->
+    if this.exists(source)
+      if member in this.smembers(source)
+        result = []
+        result.push item for item in this._get_set(source) when item != member
+        this._set_packed(source, result)
+        this.rpush(destination, member)
+        true
+      else
+        false

@@ -121,7 +121,7 @@
   * SLAVEOF host port
   * SLOWLOG subcommand [argument]
   * SMEMBERS key &#10003;
-  * SMOVE source destination member
+  * SMOVE source destination member &#10003;
   * SORT key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]
   * SPOP key
   * SRANDMEMBER key

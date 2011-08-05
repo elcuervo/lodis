@@ -517,6 +517,16 @@
 
         assert(l.sismember("foo", "one"));
         assert(!l.sismember("foo", "two"));
+      },
+
+      "SMOVE should move a member of a set to another set": function(){
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("bar", "three");
+        l.smove("foo", "bar", "two");
+
+        assert_equal(l.smembers("foo"), ["one"]);
+        assert_equal(l.smembers("bar"), ["three", "two"]);
       }
 
     });
