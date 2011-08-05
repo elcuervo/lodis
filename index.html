@@ -394,6 +394,15 @@
         assert_equal(l.lrange("bar", 0, -1), ["three", "four"]);
       },
 
+      "RPUSHX should push a key to the tail of a list only if it exists": function(){
+        l.rpush("foo", "Hello");
+        l.rpushx("foo", "World");
+        l.rpushx("bar", "World");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "World"]);
+        assert_equal(l.lrange("bar", 0, -1), []);
+      },
+
     });
 
   </script>

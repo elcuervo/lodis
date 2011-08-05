@@ -102,7 +102,7 @@
   * RPOP key &#10003;
   * RPOPLPUSH source destination &#10003;
   * RPUSH key value [value ...] &#10003;
-  * RPUSHX key value
+  * RPUSHX key value &#10003;
   * SADD key member [member ...]
   * SAVE
   * SCARD key

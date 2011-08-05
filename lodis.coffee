@@ -115,6 +115,9 @@ class @Lodis
     set.push(item)
     this._set_packed(key, set)
 
+  rpushx: (key, item) ->
+    this.rpush(key, item) if this.exists(key)
+
   decr: (key) ->
     this.decrby(key, 1)
 

@@ -169,6 +169,11 @@
       set.push(item);
       return this._set_packed(key, set);
     };
+    Lodis.prototype.rpushx = function(key, item) {
+      if (this.exists(key)) {
+        return this.rpush(key, item);
+      }
+    };
     Lodis.prototype.decr = function(key) {
       return this.decrby(key, 1);
     };
