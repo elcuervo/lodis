@@ -419,6 +419,17 @@
       }
       return _results;
     };
+    Lodis.prototype.msetnx = function() {
+      var i, key_or_value, keys_and_values;
+      keys_and_values = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+      for (i in keys_and_values) {
+        key_or_value = keys_and_values[i];
+        if (!(i % 2) && this.exists(key_or_value)) {
+          return;
+        }
+      }
+      return this.mset.apply(this, keys_and_values);
+    };
     Lodis.prototype.rpop = function(key) {};
     return Lodis;
   })();

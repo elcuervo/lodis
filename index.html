@@ -329,6 +329,14 @@
         assert_equal(l.get("bar"), "World");
       },
 
+      "MSETNX should set keys and values only if all of the keys does not exists": function(){
+        l.msetnx("foo", "Hello", "bar", "there");
+        l.msetnx("bar", "there", "baz", "world");
+
+        assert_equal(l.mget("foo", "bar", "baz"), ["Hello", "there", null]);
+      },
+
+
     });
 
   </script>

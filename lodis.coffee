@@ -275,5 +275,10 @@ class @Lodis
   mset: (keys_and_values...) ->
     this.set(keys_and_values[i-1], value) for i, value of keys_and_values when i % 2
 
+  msetnx: (keys_and_values...) ->
+    return for i, key_or_value of keys_and_values when (!(i % 2) and this.exists(key_or_value))
+    this.mset(keys_and_values...)
+
+
 
   rpop: (key) ->

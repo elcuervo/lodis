@@ -87,7 +87,7 @@
   * MONITOR
   * MOVE key db
   * MSET key value [key value ...] &#10003;
-  * MSETNX key value [key value ...]
+  * MSETNX key value [key value ...] &#10003;
   * MULTI
   * OBJECT subcommand [arguments [arguments ...]]
   * PERSIST key
