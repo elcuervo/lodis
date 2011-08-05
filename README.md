@@ -125,7 +125,7 @@
   * SORT key [BY pattern] [LIMIT offset count] [GET pattern [GET pattern ...]] [ASC|DESC] [ALPHA] [STORE destination]
   * SPOP key &#10003;
   * SRANDMEMBER key &#10003;
-  * SREM key member [member ...]
+  * SREM key member [member ...] &#10003;
   * STRLEN key
   * SUBSCRIBE channel [channel ...]
   * SUNION key [key ...]

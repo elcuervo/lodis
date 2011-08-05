@@ -25,6 +25,24 @@
     Lodis.prototype._get_set = function(key) {
       return this._get_set_or_default(key, []);
     };
+    Lodis.prototype._extract_from_set = function() {
+      var item, member, members, result, source, _i, _j, _len, _len2, _ref;
+      source = arguments[0], members = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      result = [];
+      for (_i = 0, _len = members.length; _i < _len; _i++) {
+        member = members[_i];
+        if (__indexOf.call(this.smembers(source), member) >= 0) {
+          _ref = this._get_set(source);
+          for (_j = 0, _len2 = _ref.length; _j < _len2; _j++) {
+            item = _ref[_j];
+            if (item !== member) {
+              result.push(item);
+            }
+          }
+        }
+      }
+      return result;
+    };
     Lodis.prototype._get_hash = function(key) {
       return this._get_set_or_default(key, {});
     };
@@ -594,17 +612,10 @@
       }
     };
     Lodis.prototype.smove = function(source, destination, member) {
-      var item, result, _i, _len, _ref;
+      var result;
       if (this.exists(source)) {
         if (__indexOf.call(this.smembers(source), member) >= 0) {
-          result = [];
-          _ref = this._get_set(source);
-          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-            item = _ref[_i];
-            if (item !== member) {
-              result.push(item);
-            }
-          }
+          result = this._extract_from_set(source, member);
           this._set_packed(source, result);
           this.rpush(destination, member);
           return true;
@@ -626,6 +637,15 @@
       if (this.exists(key)) {
         set = this._get_set(key);
         return set[Math.floor(Math.random() * set.length)];
+      }
+    };
+    Lodis.prototype.srem = function() {
+      var key, members, result, set;
+      key = arguments[0], members = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (this.exists(key)) {
+        set = this._get_set(key);
+        result = this._extract_from_set.apply(this, [key].concat(__slice.call(members)));
+        return this._set_packed(key, result);
       }
     };
     return Lodis;

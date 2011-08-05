@@ -16,6 +16,14 @@ class @Lodis
   _get_set: (key) ->
     this._get_set_or_default(key, [])
 
+  _extract_from_set: (source, members...) ->
+    result = []
+    for member in members
+      if member in this.smembers(source)
+        result.push item for item in this._get_set(source) when item != member
+    result
+
+
   _get_hash: (key) ->
     this._get_set_or_default(key, {})
 
@@ -381,8 +389,7 @@ class @Lodis
   smove: (source, destination, member) ->
     if this.exists(source)
       if member in this.smembers(source)
-        result = []
-        result.push item for item in this._get_set(source) when item != member
+        result = this._extract_from_set(source, member)
         this._set_packed(source, result)
         this.rpush(destination, member)
         true
@@ -399,4 +406,10 @@ class @Lodis
     if this.exists(key)
       set = this._get_set(key)
       set[Math.floor(Math.random() * set.length)]
+
+  srem: (key, members...) ->
+    if this.exists(key)
+      set = this._get_set(key)
+      result = this._extract_from_set(key, members...)
+      this._set_packed(key, result)
 

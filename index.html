@@ -547,6 +547,17 @@
         assert(["one", "two", "three"].indexOf(l.srandmember("foo")) > -1)
       },
 
+      "SREM should delete a key for a given set": function(){
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("foo", "three");
+
+        l.srem("foo", "one");
+        l.srem("foo", "four");
+
+        assert(l.smembers("foo"), ["three", "two"]);
+      },
+
     });
 
   </script>
