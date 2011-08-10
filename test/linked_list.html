@@ -1,0 +1,37 @@
+<html>
+  <script type="text/javascript" src="../../gerbil/gerbil.js"></script>
+  <script type="text/javascript" src="../ext/linked_list.js"></script>
+  <script>
+    scenario("Linked List", {
+      "before": function(){
+        window.list = new LinkedList;
+        list.add("foo");
+        list.add("bar");
+        list.add("baz");
+      },
+
+      "after": function(){
+        delete(window.list);
+      },
+
+      "should add a value into the list": function(){
+        assert_equal(list.length, 3);
+      },
+
+      "should get an item from a list based on an index": function(){
+        assert_equal(list.item(0), "foo");
+        assert_equal(list.item(1), "bar");
+        assert_equal(list.item(2), "baz");
+      },
+
+      "should be able to remove an item and re index": function(){
+        assert_equal(list.remove(0), "foo");
+        assert_equal(list.length, 2);
+        assert_equal(list.item(1), "baz");
+      }
+
+    });
+
+  </script>
+
+</html>

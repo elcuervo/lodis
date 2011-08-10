@@ -1,0 +1,261 @@
+<html>
+  <script type="text/javascript" src="../../gerbil/gerbil.js"></script>
+  <script type="text/javascript" src="../lodis.compiled.js"></script>
+  <script>
+
+    scenario("Lodis Commands - Keys", {
+      "setup": function(){
+        window.l = new Lodis;
+      },
+
+      "after": function(){
+        l.flushall();
+      },
+
+      "DEL should delete a key": function(){
+        l.set('foo', 1);
+
+        assert(l.del('foo'));
+        assert(!l.exists('foo'));
+      },
+
+      "EXISTS should validate the existance of a key": function(){
+        l.set('foo', 1);
+        assert(l.exists('foo'));
+        assert(!l.exists('bar'));
+      },
+
+      "EXPIRE should expire a key in n seconds": function(){
+        l.set("foo", 1);
+        assert(l.expire("foo", 2));
+        assert(!l.exists("foo"));
+      },
+
+      "TTL should show the remaining time of a given key after EXPIRE": function(){
+        l.set("foo", 1);
+        l.set("bar", 2);
+        l.expire("foo", 3);
+
+        assert(l.ttl("foo") > 1);
+        assert(l.ttl("bar") == -1);
+      },
+
+      "EXPIREAT should expire a key in a given epoch time": function(){
+        l.set("foo", 1);
+        l.expireat('baz', new Date().getTime() + 2000)
+        assert(!l.exists("foo"));
+      },
+
+      "KEYS should search for given keys": function(){
+        l.set('one',    1);
+        l.set('two',    2);
+        l.set('three',  3);
+
+        assert(l.keys("t").indexOf("three") >= 0);
+        assert(l.keys("t").indexOf("two") >= 0);
+        assert(l.keys("ee$").indexOf('three') >= 0);
+        assert(l.keys("xxx").length == 0);
+      },
+
+      "MOVE": function(){
+        assert(false);
+      },
+
+      "OBJECT": function(){
+        assert(false);
+      },
+
+      "PERSIST should remove the expiration after a key was setted with EXPIRE": function(){
+        l.set("foo", "Hello");
+        l.expire("foo", 10);
+
+        assert(l.ttl("foo") <= 10);
+
+        l.persist("foo");
+
+        assert_equal(l.ttl("foo"), -1);
+      },
+
+      "RENAME should rename a key": function(){
+        l.set("foo", "Hello");
+        l.rename("foo", "bar");
+
+        assert_equal(l.get("bar"), "Hello")
+      },
+
+      "RENAMENX should rename a key only if the new key value does not exists": function(){
+        l.set("foo", "Hello");
+        l.set("bar", "World");
+        l.renamenx("foo", "bar");
+
+        assert_equal(l.get("bar"), "World");
+      },
+
+      "TYPE should return the js type of a key": function(){
+        l.set("foo", "value");
+        l.lpush("bar", "value");
+        l.sadd("baz", "value");
+
+        assert_equal(l.type("foo"), "string");
+        assert_equal(l.type("bar"), "list");
+        assert_equal(l.type("baz"), "set");
+      },
+
+      "SORT": function(){
+        assert(false);
+      }
+
+    });
+
+    scenario("Lodis Commands - String", {
+      "setup": function(){
+        window.l = new Lodis;
+      },
+
+      "after": function(){
+        l.flushall();
+      },
+
+      "APPEND should append a value to a given key": function(){
+        assert(!l.exists("foo"))
+        assert_equal(l.append("foo", "Hello"), 5);
+        assert_equal(l.append("foo", " World"), 11);
+        assert_equal(l.get("foo"), "Hello World");
+      },
+
+      "DECR should decrease the value of a given key": function(){
+        l.set("foo", 10);
+        assert_equal(l.decr("foo"), 9);
+      },
+
+      "DECRBY should decrease the value of a given key by an int": function(){
+        l.set("foo", 10);
+        assert_equal(l.decrby("foo", 5), 5)
+      },
+
+      "INCR should increase the value of a given key": function(){
+        l.set("foo", 10);
+        assert_equal(l.incr("foo"), 11)
+      },
+
+      "INCRBY should increase the value of a given key by an int": function(){
+        l.set("foo", 10);
+        assert_equal(l.incrby("foo", 5), 15)
+      },
+
+      "SET should set a key": function(){
+        assert(l.set('foo', 1));
+      },
+
+      "GET should get a key": function(){
+        l.set('foo', "Hello");
+        assert_equal(l.get('foo'), "Hello");
+      },
+
+      "GETRANGE should get a substring of a value": function(){
+        l.set("foo", "This is a string");
+
+        assert_equal(l.getrange("foo", 0, 3), "This");
+        assert_equal(l.getrange("foo", -3, -1), "ing");
+        assert_equal(l.getrange("foo", 0, -1), "This is a string");
+        assert_equal(l.getrange("foo", 10, 100), "string");
+      },
+
+      "GETSET should set a key but return the old value": function(){
+        l.set("foo", "Hello");
+
+        assert_equal(l.getset("foo", "World"), "Hello");
+        assert_equal(l.get("foo"), "World");
+      },
+
+      "MGET should get the values for a given keys in a set": function(){
+        l.set("foo", "Hello");
+        l.set("bar", "World");
+
+        assert_equal(l.mget("foo", "bar", "dude"), ["Hello", "World", null]);
+      },
+
+      "MSET should set keys and values with a single command": function(){
+        l.mset("foo", "Hello", "bar", "World");
+
+        assert_equal(l.get("foo"), "Hello");
+        assert_equal(l.get("bar"), "World");
+      },
+
+      "MSETNX should set keys and values only if all of the keys does not exists": function(){
+        l.msetnx("foo", "Hello", "bar", "there");
+        l.msetnx("bar", "there", "baz", "world");
+
+        assert_equal(l.mget("foo", "bar", "baz"), ["Hello", "there", null]);
+      },
+
+      "SETEX should set a key and an expire value": function(){
+        l.setex("foo", 10, "Hello");
+
+        assert(l.ttl("foo") <= 10)
+        assert_equal(l.get("foo"), "Hello")
+      },
+
+      "SETNX should set a key only if the key does not exists": function(){
+        l.setnx("foo", "Hello");
+        l.setnx("foo", "World");
+
+        assert_equal(l.get("foo"), "Hello");
+      },
+
+      "SETRANGE should set a value for a key setting ": function(){
+        l.set("foo", "Hello World");
+        l.setrange("foo", 6, "Redis");
+
+        assert_equal(l.get("foo"), "Hello Redis");
+
+        l.setrange("bar", 6, "Redis");
+
+        assert_equal(l.get("bar"), "      Redis");
+      },
+
+      "STRLEN should return the length of a given key": function(){
+        l.set("foo", "Hello World");
+
+        assert_equal(l.strlen("foo"), 11);
+      },
+
+    });
+
+    scenario("Lodis Commands - Hashes", {
+      "setup": function(){
+        window.l = new Lodis;
+      },
+
+      "after": function(){
+        l.flushall();
+      },
+
+      "HEXISTS should check the validity of a key in a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        assert(l.hexists("foo", "bar"));
+      },
+
+      "HDEL": function(){
+        assert(false);
+      },
+
+      "HGET should get value for the key of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        assert_equal(l.hget("foo", "bar"), "Hello");
+      },
+
+      "HGETALL should get all the values of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+        assert_equal(l.hgetall("foo"), ["bar", "Hello", "baz", "World"]);
+      },
+
+
+
+    });
+
+
+  </script>
+
+</html>
