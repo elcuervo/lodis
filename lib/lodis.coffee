@@ -167,9 +167,8 @@ class @Lodis
   __get_from_hash: (key, options = with_keys: true, with_values: true, only: []) ->
     hash = this.__get_hash(key)
     hash.unpack()
-    console.log hash
     result = []
-    for key, value of values
+    for key, value of hash.values
       result.push key   if options["with_keys"]
       result.push value if options["with_values"] or ( options["only"] and key in options["only"])
     result
@@ -186,13 +185,14 @@ class @Lodis
 
   hset: (hash_key, key, value) ->
     hash = if this.__exists_in_storage(hash_key)
-             this.__get_hash(hash_key)
+             this.__get_hash(hash_key).unpack()
            else
              new Lodis::DataType::Hash
 
     hash.add(key, value)
     hash.pack()
-    this.__set_in_storage(hash_key, hash.toString())
+    value = hash.toString()
+    this.__set_in_storage(hash_key, value)
     true
 
   hget: (hash_key, key) ->

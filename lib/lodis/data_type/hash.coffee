@@ -8,12 +8,13 @@ class Lodis::DataType::Hash extends Lodis::DataType::Base
 
   unpack: ->
     super
-    console.warn this.values
     this.set this.fromJSON this.values
+    this
 
   set: (hash) -> this.values = hash
 
-  add: (key, value) -> this.values[key] = value
+  add: (key, value) ->
+    this.values[key] = value
 
   get: (key) ->
     this.values[key]

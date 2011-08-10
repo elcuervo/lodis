@@ -28,7 +28,8 @@ class Lodis::DataType::Base
     throw new Lodis::DataType::InvalidType if (parseInt type != this.type)
 
   unpack: ->
-    if this.values
+    if this.values?.length
       [head, tail...] = this.values
       this.check_valid_type(head)
       this.values = tail.join('')
+      this

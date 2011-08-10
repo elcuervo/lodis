@@ -323,7 +323,7 @@
       }
     };
     Lodis.prototype.__get_from_hash = function(key, options) {
-      var hash, result, value;
+      var hash, result, value, _ref;
       if (options == null) {
         options = {
           with_keys: true,
@@ -333,10 +333,10 @@
       }
       hash = this.__get_hash(key);
       hash.unpack();
-      console.log(hash);
       result = [];
-      for (key in values) {
-        value = values[key];
+      _ref = hash.values;
+      for (key in _ref) {
+        value = _ref[key];
         if (options["with_keys"]) {
           result.push(key);
         }
@@ -359,10 +359,11 @@
     };
     Lodis.prototype.hset = function(hash_key, key, value) {
       var hash;
-      hash = this.__exists_in_storage(hash_key) ? this.__get_hash(hash_key) : new Lodis.prototype.DataType.prototype.Hash;
+      hash = this.__exists_in_storage(hash_key) ? this.__get_hash(hash_key).unpack() : new Lodis.prototype.DataType.prototype.Hash;
       hash.add(key, value);
       hash.pack();
-      this.__set_in_storage(hash_key, hash.toString());
+      value = hash.toString();
+      this.__set_in_storage(hash_key, value);
       return true;
     };
     Lodis.prototype.hget = function(hash_key, key) {
@@ -433,11 +434,12 @@
       }
     };
     Base.prototype.unpack = function() {
-      var head, tail, _ref;
-      if (this.values) {
-        _ref = this.values, head = _ref[0], tail = 2 <= _ref.length ? __slice.call(_ref, 1) : [];
+      var head, tail, _ref, _ref2;
+      if ((_ref = this.values) != null ? _ref.length : void 0) {
+        _ref2 = this.values, head = _ref2[0], tail = 2 <= _ref2.length ? __slice.call(_ref2, 1) : [];
         this.check_valid_type(head);
-        return this.values = tail.join('');
+        this.values = tail.join('');
+        return this;
       }
     };
     return Base;
@@ -453,8 +455,8 @@
     };
     Hash.prototype.unpack = function() {
       Hash.__super__.unpack.apply(this, arguments);
-      console.warn(this.values);
-      return this.set(this.fromJSON(this.values));
+      this.set(this.fromJSON(this.values));
+      return this;
     };
     Hash.prototype.set = function(hash) {
       return this.values = hash;
