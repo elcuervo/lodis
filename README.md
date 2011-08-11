@@ -157,3 +157,6 @@
   * Store expirations within Lodis itself to avoid expiration dates on reload
   * Should handle types in a different way? custom types to match Redis?
   * Sync with Redis via HTTP?
+
+## Refactors
+  * Command class with extended commands?

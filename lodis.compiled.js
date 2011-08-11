@@ -106,13 +106,17 @@
     };
     Lodis.prototype.__alter_integer_value = function(key, quantity) {
       var value;
-      value = parseInt(this.get(key));
-      if (typeof value === "number") {
-        value = value + quantity;
-        this.set(key, value);
-        return value;
+      if (this.exists(key)) {
+        value = parseInt(this.get(key));
+        if (typeof value === "number") {
+          value = value + quantity;
+          this.set(key, value);
+          return value;
+        } else {
+          throw new Lodis.prototype.DataType.prototype.InvalidType;
+        }
       } else {
-        throw new Lodis.prototype.DataType.prototype.InvalidType;
+        return this.set(key, quantity);
       }
     };
     Lodis.prototype.append = function(key, value) {
@@ -129,14 +133,10 @@
       return this.incrby(key, 1);
     };
     Lodis.prototype.decrby = function(key, quantity) {
-      if (this.exists(key)) {
-        return this.__alter_integer_value(key, -quantity);
-      }
+      return this.__alter_integer_value(key, -quantity);
     };
     Lodis.prototype.incrby = function(key, quantity) {
-      if (this.exists(key)) {
-        return this.__alter_integer_value(key, quantity);
-      }
+      return this.__alter_integer_value(key, quantity);
     };
     Lodis.prototype.set = function(key, value) {
       var string;
@@ -332,7 +332,6 @@
         };
       }
       hash = this.__get_hash(key);
-      hash.unpack();
       result = [];
       _ref = hash.values;
       for (key in _ref) {
@@ -347,19 +346,34 @@
       return result;
     };
     Lodis.prototype.__get_hash = function(key) {
-      return new Lodis.prototype.DataType.prototype.Hash(this.__get_from_storage(key));
+      return new Lodis.prototype.DataType.prototype.Hash(this.__get_from_storage(key)).unpack();
+    };
+    Lodis.prototype.__alter_integer_value_for_hash = function(hash_key, key, quantity) {
+      var new_value, value;
+      if (this.hexists(hash_key, key)) {
+        value = parseInt(this.hget(hash_key, key));
+        if (typeof value === "number") {
+          new_value = value + quantity;
+          this.hset(hash_key, key, new_value);
+          return new_value;
+        } else {
+          throw new Lodis.prototype.DataType.prototype.InvalidType;
+        }
+      } else {
+        this.hset(hash_key, key, quantity);
+        return quantity;
+      }
     };
     Lodis.prototype.hexists = function(hash_key, key) {
       var hash;
       if (this.__exists_in_storage(hash_key)) {
         hash = this.__get_hash(hash_key);
-        hash.unpack();
         return hash.get(key) != null;
       }
     };
     Lodis.prototype.hset = function(hash_key, key, value) {
       var hash;
-      hash = this.__exists_in_storage(hash_key) ? this.__get_hash(hash_key).unpack() : new Lodis.prototype.DataType.prototype.Hash;
+      hash = this.__exists_in_storage(hash_key) ? this.__get_hash(hash_key) : new Lodis.prototype.DataType.prototype.Hash;
       hash.add(key, value);
       hash.pack();
       value = hash.toString();
@@ -370,13 +384,82 @@
       var hash;
       if (this.__exists_in_storage(hash_key)) {
         hash = this.__get_hash(hash_key);
-        hash.unpack();
         return hash.get(key);
+      }
+    };
+    Lodis.prototype.hdel = function(hash_key, key) {
+      var hash, value;
+      if (this.hexists(hash_key, key)) {
+        hash = this.__get_hash(hash_key);
+        hash.remove(key);
+        hash.pack();
+        value = hash.toString();
+        this.__set_in_storage(hash_key, value);
+        return true;
+      } else {
+        return false;
       }
     };
     Lodis.prototype.hgetall = function(hash_key) {
       if (this.__exists_in_storage(hash_key)) {
         return this.__get_from_hash(hash_key);
+      }
+    };
+    Lodis.prototype.hincrby = function(hash_key, key, quantity) {
+      return this.__alter_integer_value_for_hash(hash_key, key, quantity);
+    };
+    Lodis.prototype.hkeys = function(hash_key) {
+      if (this.exists(hash_key)) {
+        return this.__get_from_hash(hash_key, {
+          with_keys: true,
+          with_values: false
+        });
+      }
+    };
+    Lodis.prototype.hlen = function(hash_key) {
+      if (this.exists(hash_key)) {
+        return this.hkeys(hash_key).length;
+      }
+    };
+    Lodis.prototype.hmget = function() {
+      var hash_key, keys;
+      hash_key = arguments[0], keys = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      if (this.exists(hash_key)) {
+        return this.__get_from_hash(hash_key, {
+          with_values: true,
+          with_keys: false,
+          only: keys
+        });
+      }
+    };
+    Lodis.prototype.hmset = function() {
+      var hash_key, i, keys_and_values, result, value;
+      hash_key = arguments[0], keys_and_values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      result = new Lodis.prototype.DataType.prototype.Hash;
+      for (i in keys_and_values) {
+        value = keys_and_values[i];
+        if (i % 2) {
+          result.add(keys_and_values[i - 1], value);
+        }
+      }
+      result.pack();
+      value = result.toString();
+      return this.__set_in_storage(hash_key, value);
+    };
+    Lodis.prototype.hsetnx = function(hash_key, key, value) {
+      if (!this.hexists(hash_key, key)) {
+        this.hset(hash_key, key, value);
+        return true;
+      } else {
+        return false;
+      }
+    };
+    Lodis.prototype.hvals = function(hash_key) {
+      if (this.exists(hash_key)) {
+        return this.__get_from_hash(hash_key, {
+          with_keys: false,
+          with_values: true
+        });
       }
     };
     Lodis.prototype.flushall = function() {
@@ -463,6 +546,9 @@
     };
     Hash.prototype.add = function(key, value) {
       return this.values[key] = value;
+    };
+    Hash.prototype.remove = function(key) {
+      return delete this.values[key];
     };
     Hash.prototype.get = function(key) {
       return this.values[key];

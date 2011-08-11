@@ -236,8 +236,12 @@
         assert(l.hexists("foo", "bar"));
       },
 
-      "HDEL": function(){
-        assert(false);
+      "HDEL should remove a key of a hash if it exists": function(){
+        l.hset("foo", "bar", "Hello");
+
+        assert_equal(l.hlen("foo", "bar"), 1);
+        assert(l.hdel("foo", "bar"));
+        assert(!l.hdel("foo", "baz"));
       },
 
       "HGET should get value for the key of a given hash": function(){
@@ -250,6 +254,58 @@
         l.hset("foo", "baz", "World");
         assert_equal(l.hgetall("foo"), ["bar", "Hello", "baz", "World"]);
       },
+
+      "HINCRBY should change the value of a hash field": function(){
+        l.hset("foo", "bar", 5);
+
+        assert_equal(l.hincrby( "foo", "bar", 1), 6);
+        assert_equal(l.hincrby( "foo", "bar", -1), 5);
+        assert_equal(l.hincrby( "foo", "bar", -10), -5);
+      },
+
+      "HKEYS should return all the keys of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+
+        assert_equal(l.hkeys("foo"), ["bar", "baz"]);
+      },
+
+      "HLEN should return the length of the key of a given hash": function (){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+
+        assert_equal(l.hlen("foo"), 2);
+      },
+
+      "HMGET should return the values of a given set of keys of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+
+        assert_equal(l.hmget("foo", ["bar", "baz"]), ["Hello", "World"]);
+      },
+
+      "HMSET should set a group of key and values for a given hash": function(){
+        l.hmset("foo", "bar", "Hello", "baz", "World");
+
+        assert_equal(l.hget("foo", "bar"), "Hello");
+        assert_equal(l.hget("foo", "baz"), "World");
+      },
+
+      "HSETNX shoud set a hash key only if the key does not exists": function(){
+        l.hsetnx("foo", "bar", "Hello");
+        l.hsetnx("foo", "bar", "World");
+
+        assert_equal(l.hget("foo", "bar"), "Hello");
+      },
+
+      "HVALS should return all the values of a given hash": function(){
+        l.hset("foo", "bar", "Hello");
+        l.hset("foo", "baz", "World");
+
+        assert_equal(l.hvals("foo"), ["Hello", "World"]);
+      },
+
+
 
 
 

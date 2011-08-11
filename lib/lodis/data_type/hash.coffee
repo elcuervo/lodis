@@ -16,5 +16,8 @@ class Lodis::DataType::Hash extends Lodis::DataType::Base
   add: (key, value) ->
     this.values[key] = value
 
+  remove: (key) ->
+    delete this.values[key]
+
   get: (key) ->
     this.values[key]
