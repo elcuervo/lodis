@@ -160,3 +160,4 @@
 
 ## Refactors
   * Command class with extended commands?
+  * Allow multiple storage types

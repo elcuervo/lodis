@@ -222,7 +222,6 @@ class @Lodis
     else
       false
 
-
   hgetall: (hash_key) ->
     this.__get_from_hash(hash_key) if this.__exists_in_storage(hash_key)
 
@@ -254,6 +253,8 @@ class @Lodis
 
   hvals: (hash_key) ->
     this.__get_from_hash(hash_key, with_keys: false, with_values: true) if this.exists(hash_key)
+
+  # List Operations
 
   # XXX
   flushall: ->

@@ -305,11 +305,143 @@
         assert_equal(l.hvals("foo"), ["Hello", "World"]);
       },
 
+    });
 
+    scenario("Lodis Commands - Lists", {
+      "setup": function(){
+        window.l = new Lodis;
+      },
 
+      "after": function(){
+        l.flushall();
+      },
 
+      "BLPOP": function(){
+        assert(false);
+      },
+
+      "BRPOP": function(){
+        assert(false);
+      },
+
+      "BRPOPLPUSH": function(){
+        assert(false);
+      },
+
+      "LINDEX should return the value of a given hash located in a give index": function(){
+        l.lpush("foo", "World");
+        l.lpush("foo", "Hello");
+
+        assert_equal(l.lindex("foo", 0), "Hello");
+        assert_equal(l.lindex("foo", -1), "World");
+        assert(!l.lindex("foo", 3));
+      },
+
+      "LINSERT should insert a value in a set BEFORE or AFTER another one": function(){
+        l.rpush("foo", "Hello");
+        l.rpush("foo", "Programming");
+        l.rpush("foo", "World");
+        l.linsert("foo", "BEFORE", "World", "There");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "There", "Programming", "World"]);
+
+        l.linsert("foo", "AFTER", "World", "!");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "There", "Programming", "World", "!"]);
+      },
+
+      "LLEN should return the length of a list": function(){
+        l.lpush("foo", "World");
+        l.lpush("foo", "Hello");
+
+        assert_equal(l.llen("foo"), 2);
+      },
+
+      "LPOP should extract the first item in a list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.lpop("foo");
+
+        assert_equal(l.lrange("foo", 0, -1), ["two", "three"]);
+      },
+
+      "LPUSHX should insert a value to a list only if the key already exists": function(){
+        l.lpush("foo", "World");
+        l.lpushx("foo", "Hello");
+        l.lpushx("bar", "Hello");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "World"]);
+        assert_equal(l.lrange("bar", 0, -1), []);
+      },
+
+      "LREM should remove the ocurrences of a given key in a list": function(){
+        l.rpush("foo", "hello");
+        l.rpush("foo", "hello");
+        l.rpush("foo", "foo");
+        l.rpush("foo", "hello");
+        l.lrem("foo", -2, "hello");
+
+        assert_equal(l.lrange("foo", 0, -1), ["hello", "foo"]);
+      },
+
+      "LSET should replace a value in a index for a given list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.lset("foo", 0, "four");
+        l.lset("foo", -2, "five");
+
+        assert_equal(l.lrange("foo", 0, -1), ["four", "five", "three"]);
+      },
+
+      "LTRIM should trim a set with a start and an end": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.ltrim("foo", 1, -1);
+
+        assert_equal(l.lrange("foo", 0, -1), ["two", "three"]);
+      },
+
+      "RPOP extract the last item from a list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.rpop("foo");
+
+        assert_equal(l.lrange("foo", 0, -1), ["one", "two"]);
+      },
+
+      "RPOPLPUSH should extract the last key of a list and push it to the first of another list": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.rpush("bar", "four");
+
+        assert_equal(l.rpoplpush("foo", "bar"), "three");
+        assert_equal(l.lrange("foo", 0, -1), ["one", "two"]);
+        assert_equal(l.lrange("bar", 0, -1), ["three", "four"]);
+      },
+
+      "RPUSHX should push a key to the tail of a list only if it exists": function(){
+        l.rpush("foo", "Hello");
+        l.rpushx("foo", "World");
+        l.rpushx("bar", "World");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "World"]);
+        assert_equal(l.lrange("bar", 0, -1), []);
+      },
+
+      "RPUSH should add an item to the end of the list": function(){
+        l.rpush("mylist", "one");
+        l.rpush("mylist", "two");
+
+        assert_equal(l.lrange("mylist", 0, 2), ["one", "two"]);
+      },
 
     });
+
 
 
   </script>
