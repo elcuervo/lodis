@@ -467,6 +467,143 @@
 
     });
 
+    scenario("Lodis Commands - Sets", {
+      "setup": function(){
+        window.l = new Lodis;
+      },
+
+      "after": function(){
+        l.flushall();
+      },
+
+      "SADD adds a member to a list no duplicate": function(){
+        l.sadd("foo", "Hello");
+        l.sadd("foo", "World");
+        l.sadd("foo", "World");
+
+        assert_equal(l.smembers("foo"), ["World", "Hello"]);
+      },
+
+      "SMEMBERS should list the members of a list": function(){
+        l.sadd("foo", "Hello");
+        l.sadd("foo", "World");
+        l.sadd("foo", "World");
+
+        assert_equal(l.smembers("foo"), ["World", "Hello"]);
+      },
+
+      "SCARD should return the cardinality of a given set": function(){
+        l.sadd("foo", "Hello");
+        l.sadd("foo", "World");
+
+        assert_equal(l.scard("foo"), 2);
+      },
+
+      "SDIFF should return the unique values of the first set between given sets": function(){
+        l.sadd("foo", "a");
+        l.sadd("foo", "b");
+        l.sadd("foo", "c");
+
+        l.sadd("bar", "c");
+        l.sadd("bar", "d");
+        l.sadd("bar", "e");
+
+        assert_equal(l.sdiff("foo", "bar"), ["a", "b"]);
+      },
+
+      "SDIFFSTORE should work like SDIFF but storing the result in a given key": function(){
+        l.sadd("foo", "a");
+        l.sadd("foo", "b");
+        l.sadd("foo", "c");
+
+        l.sadd("bar", "c");
+        l.sadd("bar", "d");
+        l.sadd("bar", "e");
+
+        l.sdiffstore("baz", "foo", "bar");
+
+        assert_equal(l.smembers("baz"), ["a", "b"]);
+      },
+
+      "SINTER should return the intersection of to sets": function(){
+        l.sadd("foo", "a");
+        l.sadd("foo", "b");
+        l.sadd("foo", "c");
+
+        l.sadd("bar", "c");
+        l.sadd("bar", "d");
+        l.sadd("bar", "e");
+
+        assert_equal(l.sinter("foo", "bar"), ["c"]);
+      },
+
+      "SINTERSTORE should work like SINTER but storing the result in a given key": function(){
+        l.sadd("foo", "a");
+        l.sadd("foo", "b");
+        l.sadd("foo", "c");
+
+        l.sadd("bar", "c");
+        l.sadd("bar", "d");
+        l.sadd("bar", "e");
+
+        l.sinterstore("baz", "foo", "bar");
+
+        assert_equal(l.smembers("baz"), ["c"]);
+      },
+
+      "SISMEMBER should check if a value is member of a set": function(){
+        l.sadd("foo", "one");
+
+        assert(l.sismember("foo", "one"));
+        assert(!l.sismember("foo", "two"));
+      },
+
+      "SMOVE should move a member of a set to another set": function(){
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("bar", "three");
+        l.smove("foo", "bar", "two");
+
+        assert_equal(l.smembers("foo"), ["one"]);
+        assert_equal(l.smembers("bar"), ["three", "two"]);
+      },
+
+      "SPOP should extract the last member of a set": function(){
+
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("foo", "three");
+
+        l.spop("foo");
+
+        assert_equal(l.smembers("foo"), ["three", "two"]);
+      },
+
+      "SRANDMEMBER should return a random member of a set": function(){
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("foo", "three");
+
+        assert(["one", "two", "three"].indexOf(l.srandmember("foo")) > -1)
+      },
+
+      "SREM should delete a key for a given set": function(){
+        l.sadd("foo", "one");
+        l.sadd("foo", "two");
+        l.sadd("foo", "three");
+
+        l.srem("foo", "one");
+        l.srem("foo", "four");
+
+        assert(l.smembers("foo"), ["three", "two"]);
+      },
+
+      "SUNION": function(){},
+
+      "SUNIONSTORE": function(){},
+
+    });
+
 
 
   </script>
