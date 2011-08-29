@@ -1,7 +1,7 @@
 class Lodis::Command::Key extends Lodis::Command::Base
-  __expire_key: (key) =>
-    this.del(key)
-    this.expiration_storage.remove(key)
+  __expire_key: (key, storage, expiration_storage) =>
+    storage.remove(key)
+    expiration_storage.remove(key)
 
   __get_expiration: (key) ->
     JSON.parse this.expiration_storage.get(key)
@@ -18,7 +18,7 @@ class Lodis::Command::Key extends Lodis::Command::Base
 
   expire: (key, seconds) ->
     miliseconds = seconds*1000
-    timeout_id = setTimeout this.__expire_key, miliseconds, key
+    timeout_id = setTimeout(this.__expire_key, miliseconds, key, this.storage, this.expiration_storage)
     value = id: timeout_id, timeout: new Date().getTime() + miliseconds
     this.__set_expiration(key, value)
     true

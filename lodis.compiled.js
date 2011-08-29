@@ -104,6 +104,8 @@
     function Lodis(storage, expiration_storage) {
       this.storage = storage != null ? storage : new Lodis.prototype.Storage.prototype.LocalStorage;
       this.expiration_storage = expiration_storage != null ? expiration_storage : new Lodis.prototype.Storage.prototype.SessionStorage;
+      window.storage = this.storage;
+      window.expiration_storage = this.expiration_storage;
       U.extend(this, new Lodis.prototype.Command.prototype.Key);
       U.extend(this, new Lodis.prototype.Command.prototype.String);
       U.extend(this, new Lodis.prototype.Command.prototype.Hash);
@@ -339,9 +341,9 @@
       this.__expire_key = __bind(this.__expire_key, this);
       Key.__super__.constructor.apply(this, arguments);
     }
-    Key.prototype.__expire_key = function(key) {
-      this.del(key);
-      return this.expiration_storage.remove(key);
+    Key.prototype.__expire_key = function(key, storage, expiration_storage) {
+      storage.remove(key);
+      return expiration_storage.remove(key);
     };
     Key.prototype.__get_expiration = function(key) {
       return JSON.parse(this.expiration_storage.get(key));
@@ -364,7 +366,7 @@
     Key.prototype.expire = function(key, seconds) {
       var miliseconds, timeout_id, value;
       miliseconds = seconds * 1000;
-      timeout_id = setTimeout(this.__expire_key, miliseconds, key);
+      timeout_id = setTimeout(this.__expire_key, miliseconds, key, this.storage, this.expiration_storage);
       value = {
         id: timeout_id,
         timeout: new Date().getTime() + miliseconds
@@ -423,6 +425,13 @@
       }
     };
     return Key;
+  })();
+  Lodis.prototype.Command.prototype.List = (function() {
+    __extends(List, Lodis.prototype.Command.prototype.Base);
+    function List() {
+      List.__super__.constructor.apply(this, arguments);
+    }
+    return List;
   })();
   Lodis.prototype.Command.prototype.String = (function() {
     __extends(String, Lodis.prototype.Command.prototype.Base);
