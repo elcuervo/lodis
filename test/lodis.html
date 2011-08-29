@@ -316,16 +316,33 @@
         l.flushall();
       },
 
-      "BLPOP": function(){
-        assert(false);
+      "BLPOP is an alias of LPOP": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.blpop("foo");
+
+        assert_equal(l.lrange("foo", 0, -1), ["two", "three"]);
       },
 
-      "BRPOP": function(){
-        assert(false);
+      "BRPOP is an alias of RPOP": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.brpop("foo");
+
+        assert_equal(l.lrange("foo", 0, -1), ["one", "two"]);
       },
 
-      "BRPOPLPUSH": function(){
-        assert(false);
+      "BRPOPLPUSH is an alias of RPOPLPUSH": function(){
+        l.rpush("foo", "one");
+        l.rpush("foo", "two");
+        l.rpush("foo", "three");
+        l.rpush("bar", "four");
+
+        assert_equal(l.brpoplpush("foo", "bar"), "three");
+        assert_equal(l.lrange("foo", 0, -1), ["one", "two"]);
+        assert_equal(l.lrange("bar", 0, -1), ["three", "four"]);
       },
 
       "LINDEX should return the value of a given hash located in a give index": function(){
@@ -374,6 +391,14 @@
         assert_equal(l.lrange("foo", 0, -1), ["Hello", "World"]);
         assert_equal(l.lrange("bar", 0, -1), []);
       },
+
+      "LPUSH should insert a value to a list": function(){
+        l.lpush("foo", "World");
+        l.lpush("foo", "Hello");
+
+        assert_equal(l.lrange("foo", 0, -1), ["Hello", "World"]);
+      },
+
 
       "LREM should remove the ocurrences of a given key in a list": function(){
         l.rpush("foo", "hello");
@@ -434,8 +459,8 @@
       },
 
       "RPUSH should add an item to the end of the list": function(){
-        l.rpush("mylist", "one");
-        l.rpush("mylist", "two");
+        assert_equal(l.rpush("mylist", "one"), 1);
+        assert_equal(l.rpush("mylist", "two"), 2);
 
         assert_equal(l.lrange("mylist", 0, 2), ["one", "two"]);
       },

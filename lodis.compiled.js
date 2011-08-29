@@ -104,11 +104,10 @@
     function Lodis(storage, expiration_storage) {
       this.storage = storage != null ? storage : new Lodis.prototype.Storage.prototype.LocalStorage;
       this.expiration_storage = expiration_storage != null ? expiration_storage : new Lodis.prototype.Storage.prototype.SessionStorage;
-      window.storage = this.storage;
-      window.expiration_storage = this.expiration_storage;
       U.extend(this, new Lodis.prototype.Command.prototype.Key);
       U.extend(this, new Lodis.prototype.Command.prototype.String);
       U.extend(this, new Lodis.prototype.Command.prototype.Hash);
+      U.extend(this, new Lodis.prototype.Command.prototype.List);
     }
     Lodis.prototype.flushall = function() {
       this.storage.flush();
@@ -431,6 +430,197 @@
     function List() {
       List.__super__.constructor.apply(this, arguments);
     }
+    List.prototype.__get_list = function(key) {
+      return new Lodis.prototype.DataType.prototype.List(this.__get_from_storage(key)).unpack();
+    };
+    List.prototype.__save_list = function(key, list, array) {
+      var value;
+      list.set(array);
+      list.pack();
+      value = list.toString();
+      return this.__set_in_storage(key, value);
+    };
+    List.prototype.llen = function(key) {
+      var list;
+      if (this.__exists_in_storage(key)) {
+        list = this.__get_list(key);
+        return list.length();
+      }
+    };
+    List.prototype.lindex = function(key, index) {
+      var list;
+      if (this.__exists_in_storage(key)) {
+        list = this.__get_list(key);
+        if (index < 0) {
+          index = list.length() + index;
+        }
+        return list.values[index] || false;
+      }
+    };
+    List.prototype.blpop = function(key) {
+      return this.lpop(key);
+    };
+    List.prototype.lpop = function(key) {
+      var list, value;
+      if (this.__exists_in_storage(key)) {
+        list = this.__get_list(key);
+        value = list.values.slice(1);
+        list.set(value);
+        list.pack();
+        value = list.toString();
+        this.__set_in_storage(key, value);
+        return value;
+      }
+    };
+    List.prototype.lpushx = function(key, value) {
+      if (this.__exists_in_storage(key)) {
+        return this.lpush(key, value);
+      } else {
+        return false;
+      }
+    };
+    List.prototype.lrem = function(key, count, item) {
+      var array, list, quantity, result, value, _i, _len;
+      if (this.__exists_in_storage(key)) {
+        quantity = Math.abs(count);
+        list = this.__get_list(key);
+        array = list.values;
+        if (count < 0) {
+          array = array.reverse();
+        }
+        result = [];
+        for (_i = 0, _len = array.length; _i < _len; _i++) {
+          value = array[_i];
+          if (value === item && quantity > 0) {
+            quantity -= 1;
+          } else {
+            result.push(value);
+          }
+        }
+        if (count < 0) {
+          result = result.reverse();
+        }
+        list.set(result);
+        list.pack();
+        value = list.toString();
+        return this.__set_in_storage(key, value);
+      }
+    };
+    List.prototype.linsert = function(key, direction, reference_value, value) {
+      var left_side, list, result, right_side, values, _ref;
+      if (this.__exists_in_storage(key)) {
+        direction = (function() {
+          switch (direction.toUpperCase()) {
+            case "BEFORE":
+              return -1;
+            case "AFTER":
+              return 1;
+          }
+        })();
+        list = this.__get_list(key);
+        values = list.values;
+        reference_value = values.indexOf(reference_value) + direction;
+        _ref = [values.slice(0, reference_value), values.slice(reference_value)], left_side = _ref[0], right_side = _ref[1];
+        result = left_side.concat([value]);
+        result = result.concat(right_side);
+        list.set(result);
+        list.pack();
+        result = list.toString();
+        return this.__set_in_storage(key, result);
+      }
+    };
+    List.prototype.rpush = function() {
+      var key, length, list, value, values, _i, _len;
+      key = arguments[0], values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      list = this.__get_list(key);
+      for (_i = 0, _len = values.length; _i < _len; _i++) {
+        value = values[_i];
+        list.add(value);
+      }
+      length = list.length();
+      list.pack();
+      value = list.toString();
+      this.__set_in_storage(key, value);
+      return length;
+    };
+    List.prototype.lrange = function(key, start, end) {
+      var list, result;
+      end += 1;
+      list = this.__get_list(key);
+      if (end < 1) {
+        end = list.length() + end;
+      }
+      result = list.values.slice(start, end);
+      if (result.constructor === String) {
+        result = [result];
+      }
+      return result;
+    };
+    List.prototype.lpush = function() {
+      var array, key, list, value, values, _i, _len;
+      key = arguments[0], values = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      list = this.__get_list(key);
+      array = list.values;
+      for (_i = 0, _len = values.length; _i < _len; _i++) {
+        value = values[_i];
+        array.unshift(value);
+      }
+      this.__save_list(key, list, array);
+      return list.length();
+    };
+    List.prototype.lset = function(key, index, value) {
+      var array, list;
+      if (this.__exists_in_storage(key)) {
+        list = this.__get_list(key);
+        array = list.values;
+        if (index < 0) {
+          index = array.length + index;
+        }
+        array[index] = value;
+        return this.__save_list(key, list, array);
+      }
+    };
+    List.prototype.ltrim = function(key, start, end) {
+      var array, list, result;
+      if (this.__exists_in_storage(key)) {
+        list = this.__get_list(key);
+        array = list.values;
+        if (end < 0) {
+          end = array.length + end;
+        }
+        result = array.slice(start, (end + 1) || 9e9);
+        return this.__save_list(key, list, result);
+      }
+    };
+    List.prototype.brpop = function(key) {
+      return this.rpop(key);
+    };
+    List.prototype.rpop = function(key) {
+      var array, list, value;
+      if (this.__exists_in_storage(key)) {
+        list = this.__get_list(key);
+        array = list.values;
+        value = array.pop();
+        this.__save_list(key, list, array);
+        return value;
+      }
+    };
+    List.prototype.brpoplpush = function(key, other_key) {
+      return this.rpoplpush(key, other_key);
+    };
+    List.prototype.rpoplpush = function(key, other_key) {
+      var value;
+      if (this.__exists_in_storage(key)) {
+        value = this.rpop(key);
+        this.lpush(other_key, value);
+        return value;
+      }
+    };
+    List.prototype.rpushx = function(key, item) {
+      if (this.__exists_in_storage(key)) {
+        return this.rpush(key, item);
+      }
+    };
     return List;
   })();
   Lodis.prototype.Command.prototype.String = (function() {
@@ -665,12 +855,28 @@
   })();
   Lodis.prototype.DataType.prototype.List = (function() {
     __extends(List, Lodis.prototype.DataType.prototype.Base);
-    function List() {
-      List.__super__.constructor.apply(this, arguments);
-    }
     List.prototype.type = 2;
-    List.prototype.parse = function() {
-      return new LinkedList(this.values);
+    function List(values) {
+      this.values = values != null ? values : [];
+    }
+    List.prototype.set = function(list) {
+      return this.values = list;
+    };
+    List.prototype.length = function() {
+      return this.values.length;
+    };
+    List.prototype.add = function(value) {
+      return this.values.push(value);
+    };
+    List.prototype.packer = function(values) {
+      return this.toJSON(values);
+    };
+    List.prototype.unpack = function() {
+      List.__super__.unpack.apply(this, arguments);
+      if (typeof this.values === 'string') {
+        this.set(this.fromJSON(this.values));
+      }
+      return this;
     };
     return List;
   })();

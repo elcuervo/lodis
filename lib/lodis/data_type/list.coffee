@@ -1,7 +1,21 @@
-# Behave using LinkedList
-# Notation: (1,'foo','bar','baz',33)
+# Behave using Array
 class Lodis::DataType::List extends Lodis::DataType::Base
   type: 2
 
-  # Parse from a array based this.values during initialization
-  parse: -> new LinkedList this.values
+  constructor: (@values = []) ->
+
+  set: (list) -> this.values = list
+
+  length: ->
+    this.values.length
+
+  add: (value) ->
+    this.values.push value
+
+  packer: (values) ->
+    this.toJSON(values)
+
+  unpack: ->
+    super
+    this.set this.fromJSON(this.values) if typeof this.values is 'string'
+    this
