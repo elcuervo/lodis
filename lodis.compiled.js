@@ -11,7 +11,7 @@
       if (this[i] === item) return i;
     }
     return -1;
-  };
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   this.Node = (function() {
     Node.prototype.next = null;
     Node.prototype.prev = null;
@@ -101,21 +101,73 @@
     return obj;
   };
   this.Lodis = (function() {
-    function Lodis() {
-      this.storage = window.localStorage;
-      this.expiration_set = window.sessionStorage;
-      U.extend(this, new Lodis.prototype.Command.prototype.String);
+    function Lodis(storage, expiration_storage) {
+      this.storage = storage != null ? storage : new Lodis.prototype.Storage.prototype.LocalStorage;
+      this.expiration_storage = expiration_storage != null ? expiration_storage : new Lodis.prototype.Storage.prototype.SessionStorage;
       U.extend(this, new Lodis.prototype.Command.prototype.Key);
+      U.extend(this, new Lodis.prototype.Command.prototype.String);
       U.extend(this, new Lodis.prototype.Command.prototype.Hash);
     }
     Lodis.prototype.flushall = function() {
-      this.storage.clear();
-      return this.expiration_set.clear();
+      this.storage.flush();
+      return this.expiration_storage.flush();
     };
     Lodis.prototype.dbsize = function() {
-      return this.storage.length;
+      return this.storage.size();
     };
     return Lodis;
+  })();
+  Lodis.prototype.Storage = (function() {
+    function Storage() {}
+    return Storage;
+  })();
+  Lodis.prototype.Storage.prototype.LocalStorage = (function() {
+    function LocalStorage() {
+      this.storage = window.localStorage;
+    }
+    LocalStorage.prototype.set = function(key, value) {
+      return this.storage.setItem(key, value);
+    };
+    LocalStorage.prototype.get = function(key) {
+      return this.storage.getItem(key);
+    };
+    LocalStorage.prototype.remove = function(key) {
+      return this.storage.removeItem(key);
+    };
+    LocalStorage.prototype.flush = function() {
+      return this.storage.clear();
+    };
+    LocalStorage.prototype.index = function(index) {
+      return this.storage.key(index);
+    };
+    LocalStorage.prototype.size = function() {
+      return this.storage.length;
+    };
+    return LocalStorage;
+  })();
+  Lodis.prototype.Storage.prototype.SessionStorage = (function() {
+    function SessionStorage() {
+      this.storage = window.sessionStorage;
+    }
+    SessionStorage.prototype.set = function(key, value) {
+      return this.storage.setItem(key, value);
+    };
+    SessionStorage.prototype.get = function(key) {
+      return this.storage.getItem(key);
+    };
+    SessionStorage.prototype.remove = function(key) {
+      return this.storage.removeItem(key);
+    };
+    SessionStorage.prototype.flush = function() {
+      return this.storage.clear();
+    };
+    SessionStorage.prototype.index = function(index) {
+      return this.storage.key(index);
+    };
+    SessionStorage.prototype.size = function() {
+      return this.storage.length;
+    };
+    return SessionStorage;
   })();
   Lodis.prototype.Command = (function() {
     function Command() {}
@@ -124,10 +176,10 @@
   Lodis.prototype.Command.prototype.Base = (function() {
     function Base() {}
     Base.prototype.__get_from_storage = function(key) {
-      return this.storage.getItem(key);
+      return this.storage.get(key);
     };
     Base.prototype.__set_in_storage = function(key, value) {
-      return this.storage.setItem(key, value);
+      return this.storage.set(key, value);
     };
     Base.prototype.__exists_in_storage = function(key) {
       return this.__get_from_storage(key) != null;
@@ -284,30 +336,35 @@
   Lodis.prototype.Command.prototype.Key = (function() {
     __extends(Key, Lodis.prototype.Command.prototype.Base);
     function Key() {
+      this.__expire_key = __bind(this.__expire_key, this);
       Key.__super__.constructor.apply(this, arguments);
     }
+    Key.prototype.__expire_key = function(key) {
+      this.del(key);
+      return this.expiration_storage.remove(key);
+    };
     Key.prototype.__get_expiration = function(key) {
-      return JSON.parse(this.expiration_set.getItem(key));
+      return JSON.parse(this.expiration_storage.get(key));
     };
     Key.prototype.__set_expiration = function(key, value) {
-      return this.expiration_set.setItem(key, JSON.stringify(value));
+      return this.expiration_storage.set(key, JSON.stringify(value));
     };
     Key.prototype.__del_expiration = function(key) {
-      return this.expiration_set.removeItem(key);
+      return this.expiration_storage.remove(key);
     };
     Key.prototype.del = function() {
       var key, keys, _i, _len;
       keys = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
       for (_i = 0, _len = keys.length; _i < _len; _i++) {
         key = keys[_i];
-        this.storage.removeItem(key);
+        this.storage.remove(key);
       }
       return true;
     };
     Key.prototype.expire = function(key, seconds) {
       var miliseconds, timeout_id, value;
       miliseconds = seconds * 1000;
-      timeout_id = setTimeout(this._expire_key, miliseconds, key);
+      timeout_id = setTimeout(this.__expire_key, miliseconds, key);
       value = {
         id: timeout_id,
         timeout: new Date().getTime() + miliseconds
@@ -338,7 +395,7 @@
       var found_keys, i, key, _ref;
       found_keys = [];
       for (i = 0, _ref = this.dbsize(); 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
-        key = this.storage.key(i);
+        key = this.storage.index(i);
         if (key.match(regexp)) {
           found_keys.push(key);
         }
