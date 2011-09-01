@@ -4,6 +4,7 @@ class @Lodis
     U.extend this, new Lodis::Command::String
     U.extend this, new Lodis::Command::Hash
     U.extend this, new Lodis::Command::List
+    U.extend this, new Lodis::Command::Set
 
   # XXX
   flushall: ->

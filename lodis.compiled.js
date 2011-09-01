@@ -108,6 +108,7 @@
       U.extend(this, new Lodis.prototype.Command.prototype.String);
       U.extend(this, new Lodis.prototype.Command.prototype.Hash);
       U.extend(this, new Lodis.prototype.Command.prototype.List);
+      U.extend(this, new Lodis.prototype.Command.prototype.Set);
     }
     Lodis.prototype.flushall = function() {
       this.storage.flush();
@@ -623,6 +624,39 @@
     };
     return List;
   })();
+  Lodis.prototype.Command.prototype.Set = (function() {
+    __extends(Set, Lodis.prototype.Command.prototype.Base);
+    function Set() {
+      Set.__super__.constructor.apply(this, arguments);
+    }
+    Set.prototype.__get_set = function(key) {
+      return new Lodis.prototype.DataType.prototype.Set(this.__get_from_storage(key)).unpack();
+    };
+    Set.prototype.__save_set = function(key, set) {
+      var value;
+      set.pack();
+      value = set.toString();
+      return this.__set_in_storage(key, value);
+    };
+    Set.prototype.sadd = function() {
+      var key, member, members, set, _i, _len;
+      key = arguments[0], members = 2 <= arguments.length ? __slice.call(arguments, 1) : [];
+      set = this.__get_set(key);
+      for (_i = 0, _len = members.length; _i < _len; _i++) {
+        member = members[_i];
+        if (__indexOf.call(set.values, member) < 0) {
+          set.add(member);
+        }
+      }
+      return this.__save_set(key, set);
+    };
+    Set.prototype.smembers = function(key) {
+      if (this.__exists_in_storage(key)) {
+        return this.__get_set(key).values;
+      }
+    };
+    return Set;
+  })();
   Lodis.prototype.Command.prototype.String = (function() {
     __extends(String, Lodis.prototype.Command.prototype.Base);
     function String() {
@@ -879,6 +913,33 @@
       return this;
     };
     return List;
+  })();
+  Lodis.prototype.DataType.prototype.Set = (function() {
+    __extends(Set, Lodis.prototype.DataType.prototype.Base);
+    Set.prototype.type = 3;
+    function Set(values) {
+      this.values = values != null ? values : [];
+    }
+    Set.prototype.set = function(list) {
+      return this.values = list;
+    };
+    Set.prototype.length = function() {
+      return this.values.length;
+    };
+    Set.prototype.add = function(value) {
+      return this.values.push(value);
+    };
+    Set.prototype.packer = function(values) {
+      return this.toJSON(values);
+    };
+    Set.prototype.unpack = function() {
+      Set.__super__.unpack.apply(this, arguments);
+      if (typeof this.values === 'string') {
+        this.set(this.fromJSON(this.values));
+      }
+      return this;
+    };
+    return Set;
   })();
   Lodis.prototype.DataType.prototype.String = (function() {
     __extends(String, Lodis.prototype.DataType.prototype.Base);
